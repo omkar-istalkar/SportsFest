@@ -4,15 +4,24 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.entity.Event;
 import com.example.demo.repository.EventRepository;
+import com.example.demo.repository.FormFieldRepository;
+import com.example.demo.repository.RegistrationRepository;
 
 @Service
 public class EventService 
 {
 	@Autowired
 	private EventRepository eventRepository;
+	
+	@Autowired
+	private RegistrationRepository registrationRepository;
+	
+	@Autowired
+	private FormFieldRepository formFieldRepository;
 	
 	public void saveEvent(Event event)
 	{
@@ -28,8 +37,13 @@ public class EventService
 	    return eventRepository.findById(eventId).orElse(null);
 	}
 	
-	public void deleteEvent(Long eventId) {
-	    eventRepository.deleteById(eventId);
+	@Transactional
+	public void deleteEvent(Long id) {
+
+	    registrationRepository.deleteByEventId(id);
+	    formFieldRepository.deleteByEventId(id);
+
+	    eventRepository.deleteById(id);
 	}
 	
 	public void updateEvent(Event updatedEvent) {
@@ -63,5 +77,9 @@ public class EventService
 	    event.setActive(!currentStatus);
 
 	    eventRepository.save(event);
+	}
+	
+	public List<Event> getActiveEvents() {
+	    return eventRepository.findByActiveTrue();
 	}
 }

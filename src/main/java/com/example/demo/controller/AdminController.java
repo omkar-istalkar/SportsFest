@@ -15,8 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.example.demo.entity.Event;
 import com.example.demo.entity.FormField;
+import com.example.demo.entity.Registration;
+import com.example.demo.enums.RegistrationStatus;
 import com.example.demo.service.EventService;
 import com.example.demo.service.FormFieldService;
+import com.example.demo.service.RegistrationService;
 
 @Controller
 @RequestMapping("/admin")
@@ -27,6 +30,9 @@ public class AdminController {
 
 	@Autowired
 	private FormFieldService formFieldService;
+	
+	@Autowired
+	private RegistrationService registrationService;
 	
 	@GetMapping("/dashboard")
 	public String dashboard(Model model)
@@ -157,5 +163,33 @@ public class AdminController {
 	    model.addAttribute("fields", fields);
 
 	    return "preview-event";
+	}
+	
+	@GetMapping("/event-responses/{eventId}")
+	public String viewEventResponses(@PathVariable Long eventId, Model model) {
+
+	    Event event = eventService.getEventById(eventId);
+	    List<Registration> registrations = registrationService.getRegistrationsByEvent(eventId);
+
+	    model.addAttribute("event", event);
+	    model.addAttribute("registrations", registrations);
+
+	    return "event-responses";
+	}
+	
+	@GetMapping("/approve-registration/{id}")
+	public String approveRegistration(@PathVariable Long id) {
+
+	    registrationService.updateStatus(id, RegistrationStatus.APPROVED);
+
+	    return "redirect:/admin/events";
+	}
+	
+	@GetMapping("/reject-registration/{id}")
+	public String rejectRegistration(@PathVariable Long id) {
+
+	    registrationService.updateStatus(id, RegistrationStatus.REJECTED);
+
+	    return "redirect:/admin/events";
 	}
 }

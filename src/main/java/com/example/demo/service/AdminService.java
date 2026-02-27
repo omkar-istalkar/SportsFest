@@ -27,6 +27,6 @@ public class AdminService implements UserDetailsService{
 			throw new UsernameNotFoundException("Admin not found");
 		}
 		
-		return new User(admin.getUserName(), admin.getPassword(), Collections.EMPTY_LIST);
+		return new User(admin.getUserName(), admin.getPassword(), Collections.emptyList());
 	}
 }

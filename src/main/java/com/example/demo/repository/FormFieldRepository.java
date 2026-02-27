@@ -9,4 +9,6 @@ import com.example.demo.entity.FormField;
 public interface FormFieldRepository extends JpaRepository<FormField, Long>
 {
 	List<FormField> findByEventId(Long eventId);
+
+	void deleteByEventId(Long id);
 }

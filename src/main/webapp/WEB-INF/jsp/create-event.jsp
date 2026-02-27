@@ -52,6 +52,19 @@
                     <label class="form-label">Deadline</label>
                     <input type="date" name="deadline" class="form-control">
                 </div>
+				
+				<div class="mb-3">
+					Registration Type:
+					<select name="registrationType" required>
+					    <option value="INDIVIDUAL">Individual</option>
+					    <option value="TEAM">Team</option>
+					</select>
+
+					<br><br>
+
+					Team Size (only if TEAM):
+					<input type="number" name="teamSize" min="1"/>
+				</div>
 
                 <div class="form-check mb-3">
                     <input type="checkbox" name="active" class="form-check-input">

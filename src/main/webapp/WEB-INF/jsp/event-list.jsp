@@ -93,6 +93,10 @@
 							      class="btn btn-sm btn-primary">
 							      Preview
 							</a>
+							<a href="/admin/event-responses/${event.id}" 
+							   class="btn btn-sm btn-dark">
+							   View Responses
+							</a>
                         </td>
                     </tr>
                 </c:forEach>
