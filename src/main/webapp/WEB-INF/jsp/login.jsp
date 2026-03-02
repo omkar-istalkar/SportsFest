@@ -2,35 +2,50 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>SportsFest Admin Login</title>
-	<style>
-	.card {
-	    transition: transform 0.3s ease, box-shadow 0.3s ease;
-	}
+    <title>SportsFest</title>
 
-	.card:hover {
-	    transform: translateY(-5px);
-	    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-	}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-	.fade-in {
-	    animation: fadeIn 0.6s ease-in;
-	}
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e3a8a);
+            font-family: 'Segoe UI', sans-serif;
+        }
 
-	@keyframes fadeIn {
-	    from { opacity: 0; transform: translateY(15px); }
-	    to { opacity: 1; transform: translateY(0); }
-	}
-	</style>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        .login-card {
+            border-radius: 18px;
+            border: none;
+        }
+
+        .brand-title {
+            font-weight: 600;
+        }
+
+        .public-link {
+            font-size: 14px;
+        }
+
+        .btn-primary-custom {
+            background: #2563eb;
+            border: none;
+        }
+
+        .btn-primary-custom:hover {
+            background: #1d4ed8;
+        }
+    </style>
 </head>
-<body class="bg-light">
+
+<body>
 
 <div class="container vh-100 d-flex justify-content-center align-items-center">
     <div class="col-md-4">
-        <div class="card shadow-lg">
-            <div class="card-body">
-                <h3 class="text-center mb-4">SportsFest Admin</h3>
+
+        <div class="card shadow-lg login-card">
+            <div class="card-body p-4">
+
+                <h3 class="text-center brand-title mb-2">SportsFest</h3>
+                <p class="text-center text-muted mb-4">Admin Panel Login</p>
 
                 <c:if test="${param.error != null}">
                     <div class="alert alert-danger">
@@ -38,7 +53,9 @@
                     </div>
                 </c:if>
 
+                <!-- ADMIN LOGIN -->
                 <form action="/login" method="post">
+
                     <div class="mb-3">
                         <label class="form-label">Username</label>
                         <input type="text" name="userName" class="form-control" required>
@@ -49,11 +66,34 @@
                         <input type="password" name="password" class="form-control" required>
                     </div>
 
-                    <button type="submit" class="btn btn-dark w-100">Login</button>
+                    <button type="submit" class="btn btn-primary-custom w-100 mb-3">
+                        Login
+                    </button>
+
                 </form>
+
+                <hr>
+
+                <!-- PUBLIC SECTION -->
+                <div class="text-center">
+
+                    <p class="text-muted public-link mb-2">
+                        Are you a participant?
+                    </p>
+
+                    <a href="/events" class="btn btn-outline-primary w-100 mb-2">
+                        Browse Active Events
+                    </a>
+
+                    <a href="/check-status" class="btn btn-outline-secondary w-100">
+                        Check Registration Status
+                    </a>
+
+                </div>
 
             </div>
         </div>
+
     </div>
 </div>
 

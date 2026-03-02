@@ -107,4 +107,12 @@ public class RegistrationService {
         reg.setStatus(status);
         registrationRepository.save(reg);
     }
+
+    public List<Registration> getAllRegistrations() {
+        return registrationRepository.findAll();
+    }
+
+    public List<Registration> getRegistrationsByStatus(RegistrationStatus status) {
+        return registrationRepository.findByStatus(status);
+    }
 }

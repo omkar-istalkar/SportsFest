@@ -1,16 +1,15 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Event Responses</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
 
-<div class="container mt-4">
+<div>
 
-    <h2>${event.name} - Registrations</h2>
-    <hr>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="mb-0">${event.name} - Registrations</h5>
+
+        <button class="btn btn-sm btn-secondary"
+                onclick="openModal('/admin/events','Select Event')">
+            Back
+        </button>
+    </div>
 
     <c:if test="${empty registrations}">
         <div class="alert alert-info">
@@ -19,54 +18,102 @@
     </c:if>
 
     <c:if test="${not empty registrations}">
-        <table class="table table-bordered">
-            <thead class="table-dark">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+
+                <thead class="table-dark">
                 <tr>
                     <th>ID</th>
-                    <th>Captain Name</th>
-                    <th>Email</th>
-                    <th>Team Name</th>
+
+                    <!-- Dynamic Headers -->
+                    <c:forEach var="field" items="${fields}">
+                        <th>${field.label}</th>
+                    </c:forEach>
+
                     <th>Status</th>
                     <th>Action</th>
                 </tr>
-            </thead>
-            <tbody>
-                <c:forEach var="reg" items="${registrations}">
+                </thead>
+
+                <tbody>
+                <c:forEach var="reg" items="${registrations}" varStatus="status">
+
                     <tr>
-                        <td>${reg.id}</td>
-                        <td>${reg.captainName}</td>
-                        <td>${reg.email}</td>
-                        <td>${reg.teamName}</td>
+                        <td>${reg.registrationId}</td>
+
+                        <!-- Dynamic Values -->
+						<c:forEach var="field" items="${fields}">
+						    <td>
+						        ${parsedDataList[status.index][field.id.toString()]}
+						    </td>
+						</c:forEach>
+
                         <td>
                             <span class="badge 
-                                ${reg.status == 'PENDING' ? 'bg-warning' :
+                                ${reg.status == 'PENDING' ? 'bg-warning text-dark' :
                                   reg.status == 'APPROVED' ? 'bg-success' :
                                   'bg-danger'}">
                                 ${reg.status}
                             </span>
                         </td>
+
                         <td>
-                            <a href="/admin/approve-registration/${reg.id}"
-                               class="btn btn-sm btn-success">
-                               Approve
-                            </a>
+                            <c:if test="${reg.status == 'PENDING'}">
+                                <button class="btn btn-sm btn-success"
+                                        onclick="approveReg(${reg.id})">
+                                    Approve
+                                </button>
 
-                            <a href="/admin/reject-registration/${reg.id}"
-                               class="btn btn-sm btn-danger">
-                               Reject
-                            </a>
+                                <button class="btn btn-sm btn-danger"
+                                        onclick="rejectReg(${reg.id})">
+                                    Reject
+                                </button>
+                            </c:if>
                         </td>
-                    </tr>
-                </c:forEach>
-            </tbody>
-        </table>
-    </c:if>
 
-    <a href="/admin/events" class="btn btn-secondary mt-3">
-        Back to Events
-    </a>
+                    </tr>
+
+                </c:forEach>
+                </tbody>
+
+            </table>
+        </div>
+    </c:if>
 
 </div>
 
-</body>
-</html>
+<script>
+
+function approveReg(id) {
+
+    fetch('/admin/approve-registration/' + id, {
+        method: 'POST'
+    })
+    .then(response => {
+        if (response.ok) {
+            // Reload modal content
+            openModal('/admin/event-responses/${event.id}', 'Registrations - ${event.name}');
+        } else {
+            alert("Error approving registration");
+        }
+    });
+
+}
+
+function rejectReg(id) {
+
+    fetch('/admin/reject-registration/' + id, {
+        method: 'POST'
+    })
+    .then(response => {
+        if (response.ok) {
+            // Reload modal content
+            openModal('/admin/event-responses/${event.id}', 'Registrations - ${event.name}');
+        } else {
+            alert("Error rejecting registration");
+        }
+    });
+
+}
+
+</script>

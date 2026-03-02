@@ -1,37 +1,60 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!DOCTYPE html>
 <html>
 <head>
-    <title>Events</title>
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <title>SportsFest - Events</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="container mt-5">
 
-<h2>Available Events</h2>
+<body class="bg-light">
 
-<table class="table table-bordered">
-    <tr>
-        <th>Name</th>
-        <th>Description</th>
-        <th>Deadline</th>
-        <th>Action</th>
-    </tr>
+<div class="container mt-5">
 
-    <c:forEach var="event" items="${events}">
-        <tr>
-            <td>${event.name}</td>
-            <td>${event.description}</td>
-            <td>${event.deadline}</td>
-            <td>
-                <a href="/register/${event.id}" class="btn btn-primary">
-                    Register
-                </a>
-            </td>
-        </tr>
-    </c:forEach>
-</table>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Available Events</h2>
+        <a href="/" class="btn btn-outline-dark btn-sm">
+            Admin Login
+        </a>
+    </div>
 
-<a href="/check-status" class="btn btn-secondary">Check Registration Status</a>
+    <div class="row g-4">
+
+        <c:forEach var="event" items="${events}">
+            <div class="col-md-4">
+
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+
+                        <h5 class="card-title">${event.name}</h5>
+
+                        <p class="card-text text-muted">
+                            ${event.description}
+                        </p>
+
+                        <p>
+                            <strong>Deadline:</strong> ${event.deadline}
+                        </p>
+
+                        <a href="/register/${event.id}" 
+                           class="btn btn-primary w-100">
+                            Register
+                        </a>
+
+                    </div>
+                </div>
+
+            </div>
+        </c:forEach>
+
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="/check-status" class="btn btn-secondary">
+            Check Registration Status
+        </a>
+    </div>
+
+</div>
 
 </body>
 </html>

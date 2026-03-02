@@ -1,73 +1,113 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Edit Field</title>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
-    <!-- Bootstrap CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
+<div class="fade-in">
 
-<div class="container mt-5">
-    <div class="card shadow">
-        <div class="card-header bg-warning text-white">
-            <h4>Edit Form Field</h4>
+    <form action="/admin/update-field" method="post">
+
+        <!-- Hidden IDs -->
+        <input type="hidden" name="id" value="${field.id}">
+        <input type="hidden" name="event.id" value="${field.event.id}">
+
+        <!-- Field Label -->
+        <div class="mb-3">
+            <label class="form-label">Field Label</label>
+            <input type="text"
+                   name="label"
+                   class="form-control"
+                   value="${field.label}"
+                   required>
         </div>
 
-        <div class="card-body">
+        <!-- Field Type -->
+        <div class="mb-3">
+            <label class="form-label">Field Type</label>
+            <select name="fieldType" class="form-select" id="fieldTypeEdit">
+                <option value="text"
+                    <c:if test="${field.fieldType == 'text'}">selected</c:if>>
+                    Text
+                </option>
 
-            <form action="/admin/update-field" method="post">
+                <option value="number"
+                    <c:if test="${field.fieldType == 'number'}">selected</c:if>>
+                    Number
+                </option>
 
-                <!-- Hidden IDs -->
-                <input type="hidden" name="id" value="${field.id}">
-                <input type="hidden" name="event.id" value="${field.event.id}">
+                <option value="dropdown"
+                    <c:if test="${field.fieldType == 'dropdown'}">selected</c:if>>
+                    Dropdown
+                </option>
 
-                <!-- Label -->
-                <div class="mb-3">
-                    <label class="form-label">Field Label</label>
-                    <input type="text" name="label" class="form-control"
-                           value="${field.label}" required>
-                </div>
-
-                <!-- Field Type -->
-                <div class="mb-3">
-                    <label class="form-label">Field Type</label>
-                    <select name="fieldType" class="form-select">
-                        <option value="text" ${field.fieldType=='text'?'selected':''}>Text</option>
-                        <option value="number" ${field.fieldType=='number'?'selected':''}>Number</option>
-                        <option value="dropdown" ${field.fieldType=='dropdown'?'selected':''}>Dropdown</option>
-                        <option value="radio" ${field.fieldType=='radio'?'selected':''}>Radio</option>
-                    </select>
-                </div>
-
-                <!-- Options -->
-                <div class="mb-3">
-                    <label class="form-label">Options (Comma separated)</label>
-                    <input type="text" name="options" class="form-control"
-                           value="${field.options}">
-                </div>
-
-                <!-- Required -->
-                <div class="form-check mb-3">
-                    <input type="checkbox" name="required" class="form-check-input"
-                           ${field.required ? 'checked' : ''}>
-                    <label class="form-check-label">Required</label>
-                </div>
-
-                <button type="submit" class="btn btn-success">
-                    Update Field
-                </button>
-
-                <a href="/admin/fields/${field.event.id}" class="btn btn-secondary">
-                    Back
-                </a>
-
-            </form>
-
+                <option value="radio"
+                    <c:if test="${field.fieldType == 'radio'}">selected</c:if>>
+                    Radio
+                </option>
+            </select>
         </div>
-    </div>
+
+        <!-- Options -->
+        <div class="mb-3" id="optionsContainerEdit"
+             <c:if test="${field.fieldType != 'dropdown' && field.fieldType != 'radio'}">
+                 style="display:none;"
+             </c:if>>
+            <label class="form-label">Options (Comma separated)</label>
+            <input type="text"
+                   name="options"
+                   class="form-control"
+                   value="${field.options}">
+            <small class="text-muted">
+                Required for Dropdown and Radio fields
+            </small>
+        </div>
+
+        <!-- Required -->
+        <div class="form-check mb-3">
+            <input type="checkbox"
+                   name="required"
+                   class="form-check-input"
+                   id="requiredCheckEdit"
+                   <c:if test="${field.required}">checked</c:if>>
+            <label class="form-check-label" for="requiredCheckEdit">
+                Required
+            </label>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex justify-content-end gap-2">
+            <button type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal">
+                Cancel
+            </button>
+
+            <button type="submit" class="btn btn-success">
+                Update Field
+            </button>
+        </div>
+
+    </form>
+
 </div>
 
-</body>
-</html>
+<style>
+.fade-in {
+    animation: fadeIn 0.4s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<script>
+    document.addEventListener("change", function(e) {
+        if (e.target && e.target.id === "fieldTypeEdit") {
+            const optionsBox = document.getElementById("optionsContainerEdit");
+            if (e.target.value === "dropdown" || e.target.value === "radio") {
+                optionsBox.style.display = "block";
+            } else {
+                optionsBox.style.display = "none";
+            }
+        }
+    });
+</script>

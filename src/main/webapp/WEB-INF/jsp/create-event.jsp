@@ -1,83 +1,87 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Create Event</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-	<style>
-	.card {
-	    transition: transform 0.3s ease, box-shadow 0.3s ease;
-	}
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
-	.card:hover {
-	    transform: translateY(-5px);
-	    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-	}
+<div class="fade-in">
 
-	.fade-in {
-	    animation: fadeIn 0.6s ease-in;
-	}
+    <form action="/admin/save-event" method="post">
 
-	@keyframes fadeIn {
-	    from { opacity: 0; transform: translateY(15px); }
-	    to { opacity: 1; transform: translateY(0); }
-	}
-	</style>
-</head>
-<body>
-
-<nav class="navbar navbar-dark bg-dark">
-    <div class="container-fluid">
-        <span class="navbar-brand">Create Event</span>
-        <a href="/admin/dashboard" class="btn btn-outline-light btn-sm">Dashboard</a>
-    </div>
-</nav>
-
-<div class="container mt-5">
-    <div class="card shadow">
-        <div class="card-body">
-
-            <form action="/admin/save-event" method="post">
-
-                <div class="mb-3">
-                    <label class="form-label">Event Name</label>
-                    <input type="text" name="name" class="form-control" required>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Description</label>
-                    <textarea name="description" class="form-control" required></textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Deadline</label>
-                    <input type="date" name="deadline" class="form-control">
-                </div>
-				
-				<div class="mb-3">
-					Registration Type:
-					<select name="registrationType" required>
-					    <option value="INDIVIDUAL">Individual</option>
-					    <option value="TEAM">Team</option>
-					</select>
-
-					<br><br>
-
-					Team Size (only if TEAM):
-					<input type="number" name="teamSize" min="1"/>
-				</div>
-
-                <div class="form-check mb-3">
-                    <input type="checkbox" name="active" class="form-check-input">
-                    <label class="form-check-label">Active</label>
-                </div>
-
-                <button type="submit" class="btn btn-primary">Save Event</button>
-
-            </form>
-
+        <!-- Event Name -->
+        <div class="mb-3">
+            <label class="form-label">Event Name</label>
+            <input type="text" name="name" class="form-control" required>
         </div>
-    </div>
+
+        <!-- Description -->
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea name="description" class="form-control" rows="3" required></textarea>
+        </div>
+
+        <!-- Deadline -->
+        <div class="mb-3">
+            <label class="form-label">Deadline</label>
+            <input type="date" name="deadline" class="form-control">
+        </div>
+
+        <!-- Registration Type -->
+        <div class="mb-3">
+            <label class="form-label">Registration Type</label>
+            <select name="registrationType" class="form-select" id="registrationType" required>
+                <option value="INDIVIDUAL">Individual</option>
+                <option value="TEAM">Team</option>
+            </select>
+        </div>
+
+        <!-- Team Size -->
+        <div class="mb-3" id="teamSizeContainer" style="display:none;">
+            <label class="form-label">Team Size</label>
+            <input type="number" name="teamSize" class="form-control" min="1">
+            <small class="text-muted">Only required for Team registration</small>
+        </div>
+
+        <!-- Active Checkbox -->
+        <div class="form-check mb-3">
+            <input type="checkbox" name="active" class="form-check-input" id="activeCheck">
+            <label class="form-check-label" for="activeCheck">Active</label>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex justify-content-end gap-2">
+            <button type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal">
+                Cancel
+            </button>
+
+            <button type="submit" class="btn btn-primary">
+                Save Event
+            </button>
+        </div>
+
+    </form>
+
 </div>
 
-</body>
-</html>
+<style>
+.fade-in {
+    animation: fadeIn 0.4s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<script>
+    // Show/Hide team size dynamically
+    document.addEventListener("change", function(e) {
+        if (e.target && e.target.id === "registrationType") {
+            const teamSize = document.getElementById("teamSizeContainer");
+            if (e.target.value === "TEAM") {
+                teamSize.style.display = "block";
+            } else {
+                teamSize.style.display = "none";
+            }
+        }
+    });
+</script>

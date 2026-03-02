@@ -1,47 +1,37 @@
 package com.example.demo.controller;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.demo.entity.Event;
+import com.example.demo.entity.FormField;
 import com.example.demo.entity.Registration;
 import com.example.demo.enums.RegistrationStatus;
 import com.example.demo.service.EventService;
+import com.example.demo.service.FormFieldService;
 import com.example.demo.service.RegistrationService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
 public class PublicController {
 
     @Autowired
     private RegistrationService registrationService;
-
-    @GetMapping("/track")
-    public String showTrackPage() {
-        return "track-registration";
-    }
-
-    @PostMapping("/track")
-    public String track(@RequestParam String registrationId, Model model) {
-
-        Registration reg = registrationService.findByRegistrationId(registrationId);
-
-        if (reg == null) {
-            model.addAttribute("error", "Invalid Registration ID");
-            return "track-registration";
-        }
-
-        model.addAttribute("registration", reg);
-        return "registration-status";
-    }
     
+    @Autowired
+    private FormFieldService formFieldService;
+ 
     @Autowired
     private EventService eventService;
 
@@ -58,7 +48,10 @@ public class PublicController {
     public String showRegistrationForm(@PathVariable Long eventId, Model model) {
 
         Event event = eventService.getEventById(eventId);
+        List<FormField> fields = formFieldService.getFieldsByEvent(eventId);
+
         model.addAttribute("event", event);
+        model.addAttribute("fields", fields);
         model.addAttribute("registration", new Registration());
 
         return "registration-form";
@@ -66,24 +59,47 @@ public class PublicController {
 
     // 3️⃣ Submit registration
     @PostMapping("/submit-registration")
-    public String submitRegistration(@ModelAttribute Registration registration,
-                                     @RequestParam Long eventId) {
+    public String submitRegistration(@RequestParam Long eventId,
+                                     @RequestParam Map<String, String> allParams) {
 
         Event event = eventService.getEventById(eventId);
+
+        Registration registration = new Registration();
 
         registration.setEvent(event);
         registration.setRegisteredAt(LocalDateTime.now());
         registration.setStatus(RegistrationStatus.PENDING);
+        registration.setRegistrationId("SF-" + UUID.randomUUID().toString().substring(0,8));
+
+        Map<String, String> dynamicFields = new HashMap<>();
+
+        for (Map.Entry<String, String> entry : allParams.entrySet()) {
+
+            if (entry.getKey().startsWith("dynamic_")) {
+
+                String fieldId = entry.getKey().replace("dynamic_", "");
+                dynamicFields.put(fieldId, entry.getValue());
+            }
+        }
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonData = mapper.writeValueAsString(dynamicFields);
+            registration.setDynamicData(jsonData);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         Registration saved = registrationService.saveRegistration(registration);
 
-        return "redirect:/registration-success/" + saved.getId();
+        return "redirect:/registration-success/" + saved.getRegistrationId();
     }
 
     // 4️⃣ Success page
-    @GetMapping("/registration-success/{id}")
-    public String successPage(@PathVariable Long id, Model model) {
-        model.addAttribute("registrationId", id);
+    @GetMapping("/registration-success/{registrationId}")
+    public String successPage(@PathVariable String registrationId, Model model) {
+
+        model.addAttribute("registrationId", registrationId);
         return "registration-success";
     }
 
@@ -94,9 +110,40 @@ public class PublicController {
     }
 
     @PostMapping("/check-status")
-    public String checkStatus(@RequestParam Long registrationId, Model model) {
+    public String checkStatus(@RequestParam String registrationId, Model model) {
 
-        Registration reg = registrationService.findById(registrationId);
+        Registration reg = registrationService.findByRegistrationId(registrationId);
+
+        if (reg == null) {
+            model.addAttribute("error", "Invalid Registration ID");
+            return "check-status";
+        }
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+
+            Map<String, String> dynamicData =
+                    mapper.readValue(reg.getDynamicData(), Map.class);
+
+            // Fetch fields of that event
+            List<FormField> fields =
+                    formFieldService.getFieldsByEvent(reg.getEvent().getId());
+
+            // Convert fieldId -> label
+            Map<String, String> labeledData = new HashMap<>();
+
+            for (FormField field : fields) {
+                String value = dynamicData.get(String.valueOf(field.getId()));
+                if (value != null) {
+                    labeledData.put(field.getLabel(), value);
+                }
+            }
+
+            model.addAttribute("dynamicData", labeledData);
+
+        } catch (Exception e) {
+            model.addAttribute("dynamicData", null);
+        }
 
         model.addAttribute("registration", reg);
 

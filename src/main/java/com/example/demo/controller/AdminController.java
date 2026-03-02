@@ -1,6 +1,10 @@
 package com.example.demo.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -20,6 +24,7 @@ import com.example.demo.enums.RegistrationStatus;
 import com.example.demo.service.EventService;
 import com.example.demo.service.FormFieldService;
 import com.example.demo.service.RegistrationService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
 @RequestMapping("/admin")
@@ -37,8 +42,24 @@ public class AdminController {
 	@GetMapping("/dashboard")
 	public String dashboard(Model model)
 	{
-		model.addAttribute("totalEvents", eventService.getAllEvents().size());
-		return "admin-dashboard";
+		 model.addAttribute("totalEvents", eventService.getAllEvents().size());
+
+		    // Active events
+		    model.addAttribute("activeEvents", eventService.getActiveEvents().size());
+
+		    // Total registrations
+		    model.addAttribute("totalRegistrations",
+		            registrationService.getAllRegistrations().size());
+
+		    // Pending approvals
+		    model.addAttribute("pendingCount",
+		            registrationService.getRegistrationsByStatus(RegistrationStatus.PENDING).size());
+
+		    // Recent events (for table)
+		    model.addAttribute("events",
+		            eventService.getAllEvents()); // you can limit later
+
+		    return "admin-dashboard";
 	}
 	
 	@GetMapping("/create-event")
@@ -166,30 +187,104 @@ public class AdminController {
 	}
 	
 	@GetMapping("/event-responses/{eventId}")
-	public String viewEventResponses(@PathVariable Long eventId, Model model) {
+	public String eventResponses(@PathVariable Long eventId, Model model) {
 
 	    Event event = eventService.getEventById(eventId);
-	    List<Registration> registrations = registrationService.getRegistrationsByEvent(eventId);
+	    List<FormField> fields = formFieldService.getFieldsByEvent(eventId);
+
+	    List<Registration> registrations =
+	            registrationService.getRegistrationsByEvent(eventId);
+
+	    ObjectMapper mapper = new ObjectMapper();
+	    List<Map<String, String>> parsedDataList = new ArrayList<>();
+
+	    for (Registration reg : registrations) {
+	        try {
+	            Map<String, String> map =
+	                    mapper.readValue(reg.getDynamicData(), Map.class);
+	            parsedDataList.add(map);
+	        } catch (Exception e) {
+	            parsedDataList.add(new HashMap<>());
+	        }
+	    }
 
 	    model.addAttribute("event", event);
+	    model.addAttribute("fields", fields);
 	    model.addAttribute("registrations", registrations);
+	    model.addAttribute("parsedDataList", parsedDataList);
 
 	    return "event-responses";
 	}
 	
-	@GetMapping("/approve-registration/{id}")
+	@PostMapping("/approve-registration/{id}")
 	public String approveRegistration(@PathVariable Long id) {
-
 	    registrationService.updateStatus(id, RegistrationStatus.APPROVED);
+	    return "redirect:/admin/registrations";
+	}
 
-	    return "redirect:/admin/events";
+	@PostMapping("/reject-registration/{id}")
+	public String rejectRegistration(@PathVariable Long id) {
+	    registrationService.updateStatus(id, RegistrationStatus.REJECTED);
+	    return "redirect:/admin/registrations";
 	}
 	
-	@GetMapping("/reject-registration/{id}")
-	public String rejectRegistration(@PathVariable Long id) {
+	@GetMapping("/registrations")
+	public String allRegistrations(Model model) {
 
-	    registrationService.updateStatus(id, RegistrationStatus.REJECTED);
+	    List<Registration> registrations = registrationService.getAllRegistrations();
 
-	    return "redirect:/admin/events";
+	    long pending = registrations.stream()
+	            .filter(r -> r.getStatus() == RegistrationStatus.PENDING)
+	            .count();
+
+	    long approved = registrations.stream()
+	            .filter(r -> r.getStatus() == RegistrationStatus.APPROVED)
+	            .count();
+
+	    long rejected = registrations.stream()
+	            .filter(r -> r.getStatus() == RegistrationStatus.REJECTED)
+	            .count();
+
+	    model.addAttribute("registrations", registrations);
+	    model.addAttribute("pendingCount", pending);
+	    model.addAttribute("approvedCount", approved);
+	    model.addAttribute("rejectedCount", rejected);
+
+	    return "registrations";
+	}
+	
+	@GetMapping("/view-registration/{id}")
+	public String viewRegistration(@PathVariable Long id, Model model) {
+
+	    Registration reg = registrationService.findById(id);
+
+	    // Parse dynamic JSON
+	    try {
+	    	ObjectMapper mapper = new ObjectMapper();
+	    	Map<String, String> dynamicData =
+	    	        mapper.readValue(reg.getDynamicData(), Map.class);
+
+	    	// Fetch all fields of this event
+	    	List<FormField> fields =
+	    	        formFieldService.getFieldsByEvent(reg.getEvent().getId());
+
+	    	// Map fieldId -> label
+	    	Map<String, String> labeledData = new LinkedHashMap<>();
+
+	    	for (FormField field : fields) {
+	    	    String value = dynamicData.get(String.valueOf(field.getId()));
+	    	    if (value != null) {
+	    	        labeledData.put(field.getLabel(), value);
+	    	    }
+	    	}
+
+	    	model.addAttribute("dynamicData", labeledData);
+	    } catch (Exception e) {
+	        model.addAttribute("dynamicData", null);
+	    }
+
+	    model.addAttribute("registration", reg);
+
+	    return "view-registration";
 	}
 }

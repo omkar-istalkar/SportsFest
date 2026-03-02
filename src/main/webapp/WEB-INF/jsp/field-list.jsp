@@ -1,81 +1,87 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Event Fields</title>
-	<style>
-	.card {
-	    transition: transform 0.3s ease, box-shadow 0.3s ease;
-	}
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
-	.card:hover {
-	    transform: translateY(-5px);
-	    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-	}
+<div class="fade-in">
+    <!-- Fields Table -->
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Label</th>
+                    <th>Type</th>
+                    <th>Required</th>
+                    <th>Options</th>
+                    <th width="150">Action</th>
+                </tr>
+            </thead>
 
-	.fade-in {
-	    animation: fadeIn 0.6s ease-in;
-	}
-
-	@keyframes fadeIn {
-	    from { opacity: 0; transform: translateY(15px); }
-	    to { opacity: 1; transform: translateY(0); }
-	}
-	</style>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-
-<div class="container mt-5">
-    <div class="card shadow">
-        <div class="card-body">
-
-            <h4>Fields for Event: ${event.name}</h4>
-            <hr>
-
-            <a href="/admin/add-field/${event.id}" class="btn btn-primary mb-3">Add New Field</a>
-
-            <table class="table table-bordered table-hover">
-                <thead class="table-dark">
+            <tbody>
+                <c:forEach var="field" items="${fields}">
                     <tr>
-                        <th>ID</th>
-                        <th>Label</th>
-                        <th>Type</th>
-                        <th>Required</th>
-                        <th>Options</th>
-                        <th>Action</th>
+                        <td>${field.label}</td>
+                        <td>
+                            <span class="badge bg-info text-dark">
+                                ${field.fieldType}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="badge ${field.required ? 'bg-success' : 'bg-secondary'}">
+                                ${field.required ? 'Yes' : 'No'}
+                            </span>
+                        </td>
+
+                        <td>
+                            <c:choose>
+                                <c:when test="${not empty field.options}">
+                                    ${field.options}
+                                </c:when>
+                                <c:otherwise>
+                                    -
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
+
+                        <td>
+                            <button class="btn btn-sm btn-warning"
+                                    onclick="openModal('/admin/edit-field/${field.id}',
+                                                       'Edit Field')">
+                                Edit
+                            </button>
+
+                            <a href="/admin/delete-field/${field.id}"
+                               class="btn btn-sm btn-danger"
+                               onclick="return confirm('Are you sure?')">
+                                Delete
+                            </a>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    <c:forEach var="field" items="${fields}">
-                        <tr>
-                            <td>${field.id}</td>
-                            <td>${field.label}</td>
-                            <td>${field.fieldType}</td>
-                            <td>
-                                <c:if test="${field.required}">
-                                    <span class="badge bg-success">Yes</span>
-                                </c:if>
-                                <c:if test="${!field.required}">
-                                    <span class="badge bg-secondary">No</span>
-                                </c:if>
-                            </td>
-                            <td>${field.options}</td>
-							<td>
-							    <a href="/admin/edit-field/${field.id}" class="btn btn-sm btn-warning">Edit</a>
-							    <a href="/admin/delete-field/${field.id}" class="btn btn-sm btn-danger"
-							       onclick="return confirm('Are you sure?')">Delete</a>
-							</td>
-                        </tr>
-                    </c:forEach>
-                </tbody>
-            </table>
+                </c:forEach>
+            </tbody>
+        </table>
+		<div class="d-flex justify-content-between align-items-center mb-3">
 
-            <a href="/admin/events" class="btn btn-secondary">Back</a>
-
-        </div>
+			<button class="btn btn-primary btn-sm"
+			        onclick="openModal('/admin/add-field/${event.id}',
+			                           'Add Field - ${event.name}')">
+			    + Add New Field
+			</button>
+			
+		    <button class="btn btn-sm btn-secondary"
+		            onclick="openModal('/admin/events','Select Event')">
+		        Back
+		    </button>
+		</div>
     </div>
+
 </div>
 
-</body>
-</html>
+<style>
+.fade-in {
+    animation: fadeIn 0.4s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>

@@ -40,7 +40,7 @@ public class EventService
 	@Transactional
 	public void deleteEvent(Long id) {
 
-	    registrationRepository.deleteByEventId(id);
+	    registrationRepository.deleteByEvent_Id(id);
 	    formFieldRepository.deleteByEventId(id);
 
 	    eventRepository.deleteById(id);

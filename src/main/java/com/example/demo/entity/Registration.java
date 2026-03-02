@@ -1,7 +1,7 @@
 package com.example.demo.entity;
 
 import java.time.LocalDateTime;
-import java.util.List;
+
 
 import javax.persistence.*;
 
@@ -11,29 +11,7 @@ import com.example.demo.enums.RegistrationStatus;
 @Table(name = "registrations")
 public class Registration {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    // For Individual event → this is participant name
-    // For Team event → this is captain name
-    private String captainName;
-
-    private String email;
-    private String phone;
-    
-    @Column(unique = true)
-    private String registrationId;
-
-    public String getRegistrationId() {
-		return registrationId;
-	}
-
-	public void setRegistrationId(String registrationId) {
-		this.registrationId = registrationId;
-	}
-
-	public Long getId() {
+    public Long getId() {
 		return id;
 	}
 
@@ -41,36 +19,20 @@ public class Registration {
 		this.id = id;
 	}
 
-	public String getCaptainName() {
-		return captainName;
+	public String getRegistrationId() {
+		return registrationId;
 	}
 
-	public void setCaptainName(String captainName) {
-		this.captainName = captainName;
+	public void setRegistrationId(String registrationId) {
+		this.registrationId = registrationId;
 	}
 
-	public String getEmail() {
-		return email;
+	public String getDynamicData() {
+		return dynamicData;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
-	public String getTeamName() {
-		return teamName;
-	}
-
-	public void setTeamName(String teamName) {
-		this.teamName = teamName;
+	public void setDynamicData(String dynamicData) {
+		this.dynamicData = dynamicData;
 	}
 
 	public LocalDateTime getRegisteredAt() {
@@ -97,15 +59,15 @@ public class Registration {
 		this.event = event;
 	}
 
-	public List<TeamMember> getTeamMembers() {
-		return teamMembers;
-	}
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	public void setTeamMembers(List<TeamMember> teamMembers) {
-		this.teamMembers = teamMembers;
-	}
+    @Column(unique = true)
+    private String registrationId;
 
-	private String teamName; // null for individual
+    @Column(columnDefinition = "TEXT")
+    private String dynamicData;
 
     private LocalDateTime registeredAt;
 
@@ -116,8 +78,5 @@ public class Registration {
     @JoinColumn(name = "event_id")
     private Event event;
 
-    @OneToMany(mappedBy = "registration", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TeamMember> teamMembers;
-
-    // Getters & Setters
+    // getters and setters
 }

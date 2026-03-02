@@ -1,64 +1,127 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Edit Event</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
-<div class="container mt-5">
-    <div class="card shadow">
-        <div class="card-body">
+<div class="fade-in">
 
-            <h3>Edit Event</h3>
-            <hr>
+    <form action="/admin/update-event" method="post">
 
-            <form action="/admin/update-event" method="post">
+        <!-- Hidden ID -->
+        <input type="hidden" name="id" value="${event.id}">
 
-                <!-- Hidden ID (VERY IMPORTANT) -->
-                <input type="hidden" name="id" value="${event.id}">
-
-                <div class="mb-3">
-                    <label class="form-label">Event Name</label>
-                    <input type="text"
-                           name="name"
-                           value="${event.name}"
-                           class="form-control"
-                           required>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Description</label>
-                    <textarea name="description"
-                              class="form-control"
-                              required>${event.description}</textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Deadline</label>
-                    <input type="date"
-                           name="deadline"
-                           value="${event.deadline}"
-                           class="form-control">
-                </div>
-
-                <div class="form-check mb-3">
-                    <input type="checkbox"
-                           name="active"
-                           class="form-check-input"
-                           <c:if test="${event.active}">checked</c:if>>
-                    <label class="form-check-label">Active</label>
-                </div>
-
-                <button type="submit" class="btn btn-primary">Update Event</button>
-                <a href="/admin/events" class="btn btn-secondary">Cancel</a>
-
-            </form>
-
+        <!-- Event Name -->
+        <div class="mb-3">
+            <label class="form-label">Event Name</label>
+            <input type="text"
+                   name="name"
+                   value="${event.name}"
+                   class="form-control"
+                   required>
         </div>
-    </div>
+
+        <!-- Description -->
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea name="description"
+                      class="form-control"
+                      rows="3"
+                      required>${event.description}</textarea>
+        </div>
+
+        <!-- Deadline -->
+        <div class="mb-3">
+            <label class="form-label">Deadline</label>
+            <input type="date"
+                   name="deadline"
+                   value="${event.deadline}"
+                   class="form-control">
+        </div>
+
+        <!-- Registration Type -->
+        <div class="mb-3">
+            <label class="form-label">Registration Type</label>
+            <select name="registrationType"
+                    class="form-select"
+                    id="registrationTypeEdit"
+                    required>
+
+                <option value="INDIVIDUAL"
+                        <c:if test="${event.registrationType == 'INDIVIDUAL'}">selected</c:if>>
+                    Individual
+                </option>
+
+                <option value="TEAM"
+                        <c:if test="${event.registrationType == 'TEAM'}">selected</c:if>>
+                    Team
+                </option>
+
+            </select>
+        </div>
+
+        <!-- Team Size -->
+        <div class="mb-3"
+             id="teamSizeContainerEdit"
+             <c:if test="${event.registrationType != 'TEAM'}">style="display:none;"</c:if>>
+
+            <label class="form-label">Team Size</label>
+            <input type="number"
+                   name="teamSize"
+                   value="${event.teamSize}"
+                   class="form-control"
+                   min="1">
+
+            <small class="text-muted">
+                Only required for Team registration
+            </small>
+        </div>
+
+        <!-- Active Checkbox -->
+        <div class="form-check mb-3">
+            <input type="checkbox"
+                   name="active"
+                   class="form-check-input"
+                   id="activeCheckEdit"
+                   <c:if test="${event.active}">checked</c:if>>
+            <label class="form-check-label" for="activeCheckEdit">
+                Active
+            </label>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex justify-content-end gap-2">
+            <button type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal">
+                Cancel
+            </button>
+
+            <button type="submit" class="btn btn-primary">
+                Update Event
+            </button>
+        </div>
+
+    </form>
+
 </div>
 
-</body>
-</html>
+<style>
+.fade-in {
+    animation: fadeIn 0.4s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<script>
+    document.addEventListener("change", function(e) {
+        if (e.target && e.target.id === "registrationTypeEdit") {
+            const teamSize = document.getElementById("teamSizeContainerEdit");
+            if (e.target.value === "TEAM") {
+                teamSize.style.display = "block";
+            } else {
+                teamSize.style.display = "none";
+            }
+        }
+    });
+</script>
