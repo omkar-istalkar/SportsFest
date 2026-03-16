@@ -1,0 +1,15 @@
+# Eclipse
+.metadata/
+*.log
+
+# Node
+node_modules/
+dist/
+build/
+
+# Java
+target/
+
+# OS
+.DS_Store
+Thumbs.db
