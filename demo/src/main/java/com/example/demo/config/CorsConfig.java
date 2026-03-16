@@ -16,10 +16,26 @@ public class CorsConfig {
 
         CorsConfiguration config = new CorsConfiguration();
 
+        // React frontend
         config.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
-        config.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE","OPTIONS"));
+
+        // Allowed HTTP methods
+        config.setAllowedMethods(Arrays.asList(
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE",
+                "OPTIONS"
+        ));
+
+        // Allow all headers
         config.setAllowedHeaders(Arrays.asList("*"));
+
+        // Allow cookies (VERY IMPORTANT for session login)
         config.setAllowCredentials(true);
+
+        // Optional but useful
+        config.setExposedHeaders(Arrays.asList("Set-Cookie"));
 
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();

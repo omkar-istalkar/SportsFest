@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.example.demo.dto.LoginRequest;
 import com.example.demo.dto.RegisterRequest;
 import com.example.demo.entity.User;
 import com.example.demo.enums.Role;
@@ -50,24 +48,4 @@ public class AuthController
         return "User Registration successfull";
     }
 
-    //Login user
-    @PostMapping("/login")
-    public Object login(@RequestBody LoginRequest request)
-    {
-        Optional <User> userOpt = userRepository.findByEmail(request.getEmail());
-
-        if (!userOpt.isPresent()) 
-        {
-            return "Invalid Email";
-        }
-
-        User user = userOpt.get();
-
-        if (passwordEncoder.matches(request.getPassword(), user.getPassword())) 
-        {
-            return user;    
-        }
-
-        return "Invalid Password";
-    }
 }
