@@ -1,15 +1,93 @@
-# Eclipse
+# =========================
+
+# IDE / Editor
+
+# =========================
+
 .metadata/
+.vscode/
+.idea/
+*.iml
+
+# =========================
+
+# Eclipse / Spring Tool Suite
+
+# =========================
+
+.project
+.classpath
+.settings/
+.factorypath
+.springBeans
+.sts4-cache/
+
+# =========================
+
+# Java / Spring Boot
+
+# =========================
+
+target/
+*.class
+*.jar
+*.war
+*.ear
 *.log
 
-# Node
+# Maven
+
+.mvn/wrapper/maven-wrapper.jar
+
+# =========================
+
+# Node / React / Vite
+
+# =========================
+
 node_modules/
 dist/
 build/
+.cache/
+.vite/
 
-# Java
-target/
+# npm logs
 
-# OS
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================
+
+# Environment files
+
+# =========================
+
+.env
+.env.*
+
+# =========================
+
+# OS Files
+
+# =========================
+
 .DS_Store
 Thumbs.db
+
+# =========================
+
+# Media / Zip files
+
+# =========================
+
+*.zip
+*.mp4
+
+# =========================
+
+# Misc
+
+# =========================
+
+coverage/
