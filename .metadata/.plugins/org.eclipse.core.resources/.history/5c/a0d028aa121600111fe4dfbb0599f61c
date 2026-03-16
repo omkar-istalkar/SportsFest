@@ -1,0 +1,120 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
+<div class="fade-in">
+
+    <h3 class="mb-1">Registrations</h3>
+    <p class="text-muted">Manage participant registrations</p>
+
+    <!-- Summary Cards -->
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-4">
+            <div class="stat-card border-orange">
+                <h4>${pendingCount}</h4>
+                <p class="text-muted mb-0">Pending</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="stat-card border-green">
+                <h4>${approvedCount}</h4>
+                <p class="text-muted mb-0">Approved</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="stat-card border-red">
+                <h4>${rejectedCount}</h4>
+                <p class="text-muted mb-0">Rejected</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Registration Table -->
+    <div class="custom-table">
+
+        <table class="table align-middle">
+            <thead class="table-light">
+            <tr>
+                <th>ID</th>
+                <th>Participant</th>
+                <th>Event</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th width="180">Actions</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <c:forEach var="reg" items="${registrations}">
+                <tr>
+                    <td>REG-${reg.id}</td>
+
+                    <td>
+                        <strong>${reg.captainName}</strong><br>
+                        <small class="text-muted">${reg.email}</small>
+                    </td>
+
+                    <td>${reg.event.name}</td>
+
+                    <td>
+                        <span class="badge bg-info text-dark">
+                            ${reg.event.registrationType}
+                        </span>
+                    </td>
+
+                    <td>
+                        <span class="badge 
+                            ${reg.status == 'PENDING' ? 'bg-warning text-dark' :
+                              reg.status == 'APPROVED' ? 'bg-success' :
+                              'bg-danger'}">
+                            ${reg.status}
+                        </span>
+                    </td>
+
+                    <td>
+
+                        <c:if test="${reg.status == 'PENDING'}">
+                            <button class="btn btn-sm btn-success"
+                                    onclick="approveReg(${reg.id})">
+                                Approve
+                            </button>
+
+                            <button class="btn btn-sm btn-danger"
+                                    onclick="rejectReg(${reg.id})">
+                                Reject
+                            </button>
+                        </c:if>
+
+						<c:if test="${reg.status != 'PENDING'}">
+						    <button class="btn btn-sm btn-outline-secondary"
+						            onclick="openModal('/admin/view-registration/${reg.id}',
+						                               'Registration Details')">
+						        <i class="bi bi-eye"></i>
+						    </button>
+						</c:if>
+
+                    </td>
+                </tr>
+            </c:forEach>
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+<script>
+function approveReg(id) {
+    $.get('/admin/approve-registration/' + id, function() {
+        loadPage('/admin/registrations');
+    });
+}
+
+function rejectReg(id) {
+    $.get('/admin/reject-registration/' + id, function() {
+        loadPage('/admin/registrations');
+    });
+}
+</script>

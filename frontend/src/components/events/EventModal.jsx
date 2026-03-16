@@ -1,0 +1,290 @@
+import { useState, useEffect, useRef } from "react"
+import { motion } from "framer-motion"
+import { createEvent, updateEvent } from "../../services/eventService"
+import DatePicker from "react-datepicker"
+import "react-datepicker/dist/react-datepicker.css"
+
+const EventModal = ({ event, close, reload }) => {
+
+  const modalRef = useRef()
+
+  const [form, setForm] = useState({
+    name: "",
+    description: "",
+    deadline: null,
+    registrationType: "INDIVIDUAL",
+    teamSize: 1,
+    active : true
+  })
+
+  useEffect(() => {
+    if (event) {
+      setForm({
+        ...event,
+        deadline: event.deadline ? new Date(event.deadline) : null
+      })
+    }
+  }, [event])
+
+    const save = async () => {
+
+    try {
+
+        const payload = {
+        ...form,
+        deadline: form.deadline
+            ? form.deadline.toISOString().split("T")[0]
+            : null
+        }
+
+        if (event)
+        await updateEvent(event.id, payload)
+        else
+        await createEvent(payload)
+
+        reload()
+        close()
+
+    } catch (err) {
+        console.error("Event save error:", err)
+    }
+
+    }
+
+  // ESC key close
+  useEffect(() => {
+    const esc = (e) => {
+      if (e.key === "Escape") close()
+    }
+    window.addEventListener("keydown", esc)
+    return () => window.removeEventListener("keydown", esc)
+  }, [])
+
+  // outside click close
+  const handleOutside = (e) => {
+    if (modalRef.current && !modalRef.current.contains(e.target)) {
+      close()
+    }
+  }
+
+  return (
+
+    <motion.div
+      onMouseDown={handleOutside}
+      className="fixed inset-0 z-50 flex items-center justify-center
+      bg-black/60 backdrop-blur-md"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+    >
+
+      <motion.div
+        ref={modalRef}
+        initial={{ scale: 0.9, y: 20, opacity: 0 }}
+        animate={{ scale: 1, y: 0, opacity: 1 }}
+        transition={{ duration: 0.25 }}
+        className="
+        w-[480px]
+        p-7
+        rounded-2xl
+        border border-border
+        shadow-2xl
+        bg-gradient-to-br
+        from-[#0f172a]
+        via-[#020617]
+        to-[#020617]
+        backdrop-blur-xl
+        "
+      >
+
+        {/* Title */}
+
+        <h2 className="text-lg font-semibold mb-6">
+          {event ? "Edit Event" : "Create Event"}
+        </h2>
+
+        {/* Event Name */}
+
+        <div className="mb-5">
+
+          <label className="text-sm text-muted-foreground mb-1 block">
+            Event Name
+          </label>
+
+          <input
+            className="
+            w-full px-3 py-2 rounded-lg
+            bg-muted/30
+            border border-border
+            focus:outline-none
+            focus:ring-1 focus:ring-yellow-500
+            transition
+            "
+            placeholder="Enter event name"
+            value={form.name}
+            onChange={(e) =>
+              setForm({ ...form, name: e.target.value })
+            }
+          />
+
+        </div>
+
+        {/* Description */}
+
+        <div className="mb-5">
+
+          <label className="text-sm text-muted-foreground mb-1 block">
+            Description
+          </label>
+
+          <textarea
+            rows="3"
+            className="
+            w-full px-3 py-2 rounded-lg
+            bg-muted/30
+            border border-border
+            focus:outline-none
+            focus:ring-1 focus:ring-yellow-500
+            transition
+            "
+            placeholder="Event description"
+            value={form.description}
+            onChange={(e) =>
+              setForm({ ...form, description: e.target.value })
+            }
+          />
+
+        </div>
+
+        {/* Deadline */}
+
+        <div className="mb-5">
+
+          <label className="text-sm text-muted-foreground mb-1 block">
+            Deadline
+          </label>
+
+          <DatePicker
+            selected={form.deadline}
+            onChange={(date) =>
+              setForm({ ...form, deadline: date })
+            }
+            dateFormat="dd-MM-yyyy"
+            placeholderText="Select deadline"
+            className="
+            w-full px-3 py-2 rounded-lg
+            bg-muted/30
+            border border-border
+            focus:outline-none
+            focus:ring-1 focus:ring-yellow-500
+            transition
+            "
+          />
+
+        </div>
+
+        {/* Registration Type */}
+
+        <div className="mb-5">
+
+          <label className="text-sm text-muted-foreground mb-1 block">
+            Registration Type
+          </label>
+
+          <select
+            className="
+            w-full px-3 py-2 rounded-lg
+            bg-muted/30
+            border border-border
+            focus:outline-none
+            focus:ring-1 focus:ring-yellow-500
+            transition
+            "
+            value={form.registrationType}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                registrationType: e.target.value
+              })
+            }
+          >
+
+            <option value="INDIVIDUAL">Individual</option>
+            <option value="TEAM">Team</option>
+
+          </select>
+
+        </div>
+
+        {/* Team Size */}
+
+        {form.registrationType === "Team" && (
+
+          <div className="mb-6">
+
+            <label className="text-sm text-muted-foreground mb-1 block">
+              Team Size
+            </label>
+
+            <input
+              type="number"
+              className="
+              w-full px-3 py-2 rounded-lg
+              bg-muted/30
+              border border-border
+              focus:outline-none
+              focus:ring-1 focus:ring-yellow-500
+              transition
+              "
+              value={form.teamSize}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  teamSize: e.target.value
+                })
+              }
+            />
+
+          </div>
+
+        )}
+
+        {/* Buttons */}
+
+        <div className="flex justify-end gap-3">
+
+          <button
+            className="
+            px-4 py-2 rounded-lg
+            bg-gray-600/70
+            text-white
+            hover:bg-gray-500
+            transition
+            "
+            onClick={close}
+          >
+            Cancel
+          </button>
+
+          <button
+            className="
+            px-4 py-2 rounded-lg
+            bg-blue-600
+            text-white
+            hover:bg-blue-500
+            hover:scale-[1.02]
+            transition
+            "
+            onClick={save}
+          >
+            Save Event
+          </button>
+
+        </div>
+
+      </motion.div>
+
+    </motion.div>
+  )
+}
+
+export default EventModal

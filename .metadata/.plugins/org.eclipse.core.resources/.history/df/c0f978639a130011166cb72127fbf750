@@ -1,0 +1,37 @@
+package com.example.demo.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.example.demo.entity.Registration;
+import com.example.demo.service.RegistrationService;
+
+@Controller
+public class PublicController {
+
+    @Autowired
+    private RegistrationService registrationService;
+
+    @GetMapping("/track")
+    public String showTrackPage() {
+        return "track-registration";
+    }
+
+    @PostMapping("/track")
+    public String track(@RequestParam String registrationId, Model model) {
+
+        Registration reg = registrationService.findByRegistrationId(registrationId);
+
+        if (reg == null) {
+            model.addAttribute("error", "Invalid Registration ID");
+            return "track-registration";
+        }
+
+        model.addAttribute("registration", reg);
+        return "registration-status";
+    }
+}

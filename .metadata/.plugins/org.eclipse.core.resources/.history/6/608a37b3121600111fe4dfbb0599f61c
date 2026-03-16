@@ -1,0 +1,35 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registration Status</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="container mt-5">
+
+<h2>Registration Details</h2>
+<hr>
+
+<p><b>Registration ID:</b> ${registration.registrationId}</p>
+<p><b>Name:</b> ${registration.captainName}</p>
+<p><b>Email:</b> ${registration.email}</p>
+<p><b>Event:</b> ${registration.event.name}</p>
+<p><b>Team:</b> ${registration.teamName}</p>
+<p><b>Status:</b> ${registration.status}</p>
+<p><b>Registered At:</b> ${registration.registeredAt}</p>
+
+<hr>
+
+<h5>Custom Responses</h5>
+
+<c:if test="${empty dynamicFields}">
+    <p class="text-muted">No custom responses.</p>
+</c:if>
+
+<c:forEach var="entry" items="${dynamicFields}">
+    <p><b>${entry.key}:</b> ${entry.value}</p>
+</c:forEach>
+
+</body>
+</html>

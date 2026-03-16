@@ -1,0 +1,49 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
+<div>
+
+    <h5 class="mb-3">Registration Details</h5>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <strong>Registration ID:</strong><br>
+            REG-${registration.id}
+        </div>
+
+        <div class="col-md-6">
+            <strong>Status:</strong><br>
+            <span class="badge 
+                ${registration.status == 'PENDING' ? 'bg-warning text-dark' :
+                  registration.status == 'APPROVED' ? 'bg-success' :
+                  'bg-danger'}">
+                ${registration.status}
+            </span>
+        </div>
+    </div>
+
+    <hr>
+
+    <h6>Basic Information</h6>
+
+    <p><strong>Name:</strong> ${registration.captainName}</p>
+    <p><strong>Email:</strong> ${registration.email}</p>
+    <p><strong>Phone:</strong> ${registration.phone}</p>
+
+    <c:if test="${registration.teamName != null}">
+        <p><strong>Team:</strong> ${registration.teamName}</p>
+    </c:if>
+
+    <hr>
+
+    <h6>Custom Fields</h6>
+
+    <c:if test="${not empty dynamicData}">
+        <c:forEach var="entry" items="${dynamicData}">
+            <p>
+                <strong>Field ${entry.key}:</strong>
+                ${entry.value}
+            </p>
+        </c:forEach>
+    </c:if>
+
+</div>

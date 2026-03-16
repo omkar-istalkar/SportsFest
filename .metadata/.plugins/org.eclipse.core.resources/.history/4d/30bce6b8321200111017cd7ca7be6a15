@@ -1,0 +1,24 @@
+<html>
+	<head>
+		<title>Create Event</title>
+	</head>
+	<body>
+		<h2>Create Sports Event</h2>
+		
+		<form action="/admin/save-event" method="post">
+			Event Name:
+			<input type="text" name="name",required><br><br>
+			
+			Description:
+			<textarea name="description",required></textarea><br><br>
+			
+			Deadline:
+			<input type="date" name="deadline"/><br><br>
+			
+			Active:
+			<input type="checkbox" name="active" /><br><br>
+			
+			<button type="submit">Save Event</button>
+		</form>
+	</body>
+</html>

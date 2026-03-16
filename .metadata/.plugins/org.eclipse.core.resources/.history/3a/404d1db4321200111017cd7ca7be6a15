@@ -1,0 +1,27 @@
+<html>
+	<head>
+		<title>Add Form Field</title>
+	</head>
+	<body>
+		<h2>Add field</h2>
+		<form action="/admin/save-field/${eventId}" method="post">
+			Label:
+			<input type="text" name="label" required><br><br>
+			Field Type:
+			<select name="fieldType">
+				<option value="text">Text</option>
+				<option value="number">Number</option>
+				<option value="dropdown">Dropdown</option>
+				<option value="radio">Radio</option>
+			</select><br><br>
+			
+			Options(Comma separated if dropdown/radio)
+			<input type="text" name="options"/><br><br>
+			
+			Required:
+			<input type="checkbox" name="required"><br><br>
+			
+			<button type="submit">Save Field</button>
+		</form>
+	</body>
+</html>

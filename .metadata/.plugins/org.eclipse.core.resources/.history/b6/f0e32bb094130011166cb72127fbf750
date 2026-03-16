@@ -1,0 +1,40 @@
+package com.example.demo.entity;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import javax.persistence.*;
+
+import com.example.demo.enums.RegistrationStatus;
+
+@Entity
+@Table(name = "registrations")
+public class Registration {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    // For Individual event → this is participant name
+    // For Team event → this is captain name
+    private String captainName;
+
+    private String email;
+    private String phone;
+
+    private String teamName; // null for individual
+
+    private LocalDateTime registeredAt;
+
+    @Enumerated(EnumType.STRING)
+    private RegistrationStatus status;
+
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    private Event event;
+
+    @OneToMany(mappedBy = "registration", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TeamMember> teamMembers;
+
+    // Getters & Setters
+}

@@ -1,0 +1,147 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+.react-datepicker {
+  background: #0f172a;
+  border: 1px solid #1f2937;
+  color: white;
+  border-radius: 12px;
+}
+
+.react-datepicker__header {
+  background: linear-gradient(135deg,#0f172a,#1e293b);
+  border-bottom: 1px solid #1f2937;
+}
+
+.react-datepicker__day {
+  color: #d1d5db;
+}
+
+.react-datepicker__day:hover {
+  background: #2563eb;
+  color: white;
+  border-radius: 6px;
+}
+
+.react-datepicker__day--selected {
+  background: #3b82f6;
+  color: white;
+}
+
+.react-datepicker__current-month {
+  color: white;
+}
+
+.react-datepicker {
+  background: #020617;
+  border: 1px solid #1f2937;
+  color: white;
+  border-radius: 10px;
+}
+
+.react-datepicker__header {
+  background: #0f172a;
+  border-bottom: 1px solid #1f2937;
+}
+
+.react-datepicker__day {
+  color: #d1d5db;
+}
+
+.react-datepicker__day:hover {
+  background: #2563eb;
+  color: white;
+  border-radius: 6px;
+}
+
+.react-datepicker__day--selected {
+  background: #3b82f6;
+}
+
+.react-datepicker__current-month {
+  color: white;
+}
+
+.events-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:20px;
+}
+
+.event-card{
+background:#1e293b;
+padding:20px;
+border-radius:10px;
+color:white;
+}
+
+.register-btn{
+display:inline-block;
+margin-top:10px;
+background:#3b82f6;
+padding:8px 14px;
+border-radius:6px;
+text-decoration:none;
+color:white;
+}
+
+.dynamic-form{
+max-width:400px;
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+.dynamic-form input{
+padding:8px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+.dynamic-form button{
+background:#22c55e;
+color:white;
+border:none;
+padding:10px;
+border-radius:6px;
+}

@@ -1,0 +1,98 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register - ${event.name}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e3a8a);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .register-card {
+            border-radius: 18px;
+            border: none;
+            animation: fadeSlide 0.5s ease;
+        }
+
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container mt-5 mb-5">
+
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+
+            <div class="card shadow-lg register-card">
+                <div class="card-body p-4">
+
+                    <h3 class="mb-3">${event.name}</h3>
+                    <p class="text-muted">${event.description}</p>
+
+                    <hr>
+
+                    <form action="/submit-registration" method="post">
+
+                        <input type="hidden" name="eventId" value="${event.id}" />
+
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" name="captainName"
+                                   class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email"
+                                   class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Phone</label>
+                            <input type="text" name="phone"
+                                   class="form-control" required>
+                        </div>
+
+                        <!-- TEAM FIELD ONLY IF TEAM EVENT -->
+                        <c:if test="${event.registrationType == 'TEAM'}">
+                            <div class="mb-3">
+                                <label class="form-label">Team Name</label>
+                                <input type="text" name="teamName"
+                                       class="form-control" required>
+                            </div>
+                        </c:if>
+
+                        <button type="submit"
+                                class="btn btn-primary w-100">
+                            <i class="bi bi-check-circle"></i>
+                            Submit Registration
+                        </button>
+
+                    </form>
+
+                </div>
+            </div>
+
+            <div class="text-center mt-3">
+                <a href="/events" class="text-white text-decoration-none">
+                    ← Back to Events
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
