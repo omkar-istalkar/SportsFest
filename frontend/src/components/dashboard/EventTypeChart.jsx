@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import axios from "axios";
+import api from "../../services/api";
 import { useEffect, useState } from "react";
 import {
   PieChart,
@@ -18,7 +18,7 @@ const EventTypeChart = () => {
 
   useEffect(() => {
 
-    axios.get("http://localhost:8080/api/dashboard/event-types")
+    api.get("/api/dashboard/event-types")
       .then(res => {
 
         const team = res.data.team;

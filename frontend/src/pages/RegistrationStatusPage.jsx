@@ -18,7 +18,7 @@ setLoading(true)
 
 const numericId = regId.toUpperCase().replace("REG-","")
 
-const res = await axios.get(`${API}/registrations`)
+const res = await axios.get(`${API}/registrations`, {withCredentials:true})
 
 const registration = res.data.find(r => r.id === Number(numericId))
 

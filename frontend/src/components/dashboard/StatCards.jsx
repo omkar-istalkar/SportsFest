@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Calendar, Activity, Users, DollarSign } from "lucide-react";
-import axios from "axios";
+import api from "../../services/api";
 import { useEffect, useState } from "react";
 
 const StatCards = () => {
@@ -21,7 +21,7 @@ const StatCards = () => {
   });
 
   useEffect(() => {
-    axios.get("http://localhost:8080/api/dashboard/stats")
+    api.get("/api/dashboard/stats")
       .then(res => setStats(res.data))
       .catch(err => console.error("API Error:", err));
   }, []);

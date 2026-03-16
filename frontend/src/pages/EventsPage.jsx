@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api from "../services/api";
 
 export default function EventsPage() {
 
@@ -11,7 +11,7 @@ export default function EventsPage() {
   }, []);
 
   const loadEvents = async () => {
-    const res = await axios.get("http://localhost:8080/api/events");
+    const res = await api.get("/api/events");
     setEvents(res.data);
     console.log("Event Data:", res.data);
   };

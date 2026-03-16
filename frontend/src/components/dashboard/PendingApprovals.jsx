@@ -1,14 +1,14 @@
 import { motion } from "framer-motion";
 import { Clock, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../services/api";
 
 const PendingApprovals = () => {
 
   const [pending, setPending] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:8080/api/dashboard/pending")
+    api.get("/api/dashboard/pending")
       .then(res => setPending(res.data))
       .catch(err => console.error(err));
   }, []);

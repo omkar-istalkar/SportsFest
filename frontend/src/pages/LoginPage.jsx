@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 import { Link } from "react-router-dom";
 
 export default function LoginPage() {
@@ -8,42 +8,56 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
 
   const login = async (e) => {
+
     e.preventDefault();
 
+    console.log("====== LOGIN ATTEMPT ======");
+    console.log("Username entered:", userName);
+    console.log("Password entered:", password);
+
     const formData = new URLSearchParams();
-    formData.append("userName", userName);
+
+    formData.append("username", userName);
     formData.append("password", password);
+
+    console.log("Payload being sent:", formData.toString());
 
     try {
 
-      const res = await axios.post(
-        "http://localhost:8080/login",
-        formData,
-        { withCredentials: true }
-      );
+      const res = await api.post("/login", formData, {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      });
+
+      console.log("Login response:", res.data);
 
       alert("Login successful");
 
       const role = res.data.role;
 
-      // Store role for route protection
       localStorage.setItem("role", role);
 
-      // Redirect based on role
       if (role === "ROLE_ADMIN") {
         window.location.href = "/";
-      } 
+      }
+
       else if (role === "ROLE_USER") {
         window.location.href = "/events";
-      } 
+      }
+
       else {
         window.location.href = "/";
       }
 
-    } catch (err) {
+    }
+    catch (err) {
 
-      alert("Invalid credentials");
+      console.error("LOGIN ERROR:", err);
 
+      console.error("Server error response:", err.response?.data);
+
+      alert(err.response?.data?.message || "Invalid credentials");
     }
   };
 
@@ -63,7 +77,12 @@ export default function LoginPage() {
             className="border p-2 w-full mb-3 rounded"
             placeholder="Email / Username"
             value={userName}
-            onChange={(e) => setUserName(e.target.value)}
+            onChange={(e) => {
+
+              console.log("Typing username:", e.target.value);
+              setUserName(e.target.value);
+
+            }}
           />
 
           <input
@@ -71,7 +90,12 @@ export default function LoginPage() {
             className="border p-2 w-full mb-3 rounded"
             placeholder="Password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+
+              console.log("Typing password:", e.target.value);
+              setPassword(e.target.value);
+
+            }}
           />
 
           <button
@@ -83,8 +107,6 @@ export default function LoginPage() {
 
         </form>
 
-        {/* Registration Option */}
-
         <div className="mt-4 text-center">
 
           <Link
@@ -95,8 +117,6 @@ export default function LoginPage() {
           </Link>
 
         </div>
-
-        {/* Public Options */}
 
         <div className="mt-6 border-t pt-4 text-center">
 
@@ -123,6 +143,5 @@ export default function LoginPage() {
       </div>
 
     </div>
-
   );
 }

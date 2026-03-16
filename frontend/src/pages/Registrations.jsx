@@ -20,7 +20,7 @@ try{
 
 setLoading(true)
 
-const resRegs = await axios.get(`${API}/registrations`)
+const resRegs = await axios.get(`${API}/registrations`,{withCredentials:true})
 setRegistrations(resRegs.data)
 
 }catch(err){
@@ -45,7 +45,7 @@ const approve = async (id) => {
 
 try{
 
-await axios.post(`${API}/registrations/approve/${id}`)
+await axios.post(`${API}/registrations/approve/${id}`,{withCredentials:true})
 
 alert("Registration approved")
 
@@ -65,7 +65,7 @@ const reject = async (id) => {
 
 try{
 
-await axios.post(`${API}/registrations/reject/${id}`)
+await axios.post(`${API}/registrations/reject/${id}`,{withCredentials:true})
 
 alert("Registration rejected")
 
@@ -91,7 +91,7 @@ const eventId = reg.event?.id
 
 if(eventId){
 
-const resFields = await axios.get(`${API}/fields/event/${eventId}`)
+const resFields = await axios.get(`${API}/fields/event/${eventId}`,{withCredentials:true})
 
 // handle axios structure
 if(Array.isArray(resFields.data)){

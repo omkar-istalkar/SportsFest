@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import axios from "axios";
+import api from "../../services/api";
 import { useEffect, useState } from "react";
 import {
   LineChart,
@@ -17,7 +17,7 @@ const RegistrationTrendChart = () => {
 
   useEffect(() => {
 
-    axios.get("http://localhost:8080/api/dashboard/registration-trend")
+    api.get("/api/dashboard/registration-trend")
       .then(res => {
 
         const formatted = res.data.map(item => ({

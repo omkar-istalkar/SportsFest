@@ -1,14 +1,14 @@
 import { motion } from "framer-motion";
 import { CalendarClock, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../services/api";
 
 const UpcomingDeadlines = () => {
 
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:8080/api/dashboard/upcoming-deadlines")
+    api.get("/api/dashboard/upcoming-deadlines")
       .then(res => {
 
         const today = new Date();

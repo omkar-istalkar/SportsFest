@@ -3,7 +3,7 @@ import axios from "axios";
 const API = "http://localhost:8080/api";
 
 const api = axios.create({
-  baseURL: API
+  baseURL: API,withCredentials:true
 });
 
 export const getEvents = () => api.get("/events");

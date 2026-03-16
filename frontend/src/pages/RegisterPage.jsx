@@ -13,12 +13,10 @@ export default function RegisterPage() {
   });
 
   const handleChange = (e) => {
-
     setForm({
       ...form,
       [e.target.name]: e.target.value
     });
-
   };
 
   const handleSubmit = async (e) => {
@@ -41,49 +39,107 @@ export default function RegisterPage() {
 
   };
 
+  const styles = {
+
+    page: {
+      height: "100vh",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      background: "linear-gradient(135deg,#667eea,#764ba2)",
+      fontFamily: "Arial"
+    },
+
+    card: {
+      width: "350px",
+      padding: "40px",
+      borderRadius: "12px",
+      background: "white",
+      boxShadow: "0 10px 25px rgba(0,0,0,0.2)",
+      textAlign: "center",
+      animation: "fadeIn 0.6s ease"
+    },
+
+    title: {
+      marginBottom: "25px",
+      fontSize: "24px",
+      fontWeight: "bold",
+      color: "#333"
+    },
+
+    input: {
+      width: "100%",
+      padding: "12px",
+      marginBottom: "15px",
+      borderRadius: "6px",
+      border: "1px solid #ccc",
+      fontSize: "14px",
+      outline: "none"
+    },
+
+    button: {
+      width: "100%",
+      padding: "12px",
+      background: "#667eea",
+      color: "white",
+      border: "none",
+      borderRadius: "6px",
+      fontSize: "16px",
+      cursor: "pointer",
+      transition: "0.3s"
+    }
+
+  };
+
   return (
 
-    <div className="login-container">
+    <div style={styles.page}>
 
-      <h2 className="title">
-        Create Account
-      </h2>
+      <div style={styles.card}>
 
-      <form onSubmit={handleSubmit}>
+        <h2 style={styles.title}>
+          Create Account
+        </h2>
 
-        <input
-          name="name"
-          placeholder="Full Name"
-          value={form.name}
-          onChange={handleChange}
-          className="input"
-        />
+        <form onSubmit={handleSubmit}>
 
-        <input
-          name="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          className="input"
-        />
+          <input
+            name="name"
+            placeholder="Full Name"
+            value={form.name}
+            onChange={handleChange}
+            style={styles.input}
+          />
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-          className="input"
-        />
+          <input
+            name="email"
+            placeholder="Email"
+            value={form.email}
+            onChange={handleChange}
+            style={styles.input}
+          />
 
-        <button
-          type="submit"
-          className="btn-primary"
-        >
-          Register
-        </button>
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={form.password}
+            onChange={handleChange}
+            style={styles.input}
+          />
 
-      </form>
+          <button
+            type="submit"
+            style={styles.button}
+            onMouseOver={(e)=>e.target.style.background="#5a67d8"}
+            onMouseOut={(e)=>e.target.style.background="#667eea"}
+          >
+            Register
+          </button>
+
+        </form>
+
+      </div>
 
     </div>
 

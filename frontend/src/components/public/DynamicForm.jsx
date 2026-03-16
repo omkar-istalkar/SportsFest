@@ -36,7 +36,7 @@ export default function DynamicForm({ fields = [], eventId }) {
 
       const res = await axios.post(
         "http://localhost:8080/api/registrations/submit-registration",
-        data
+        data,{withCredentials:true}
       );
 
       console.log("Registration response:", res.data);

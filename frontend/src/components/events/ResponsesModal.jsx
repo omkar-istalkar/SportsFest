@@ -35,8 +35,8 @@ close()
 const approveReg = async(id)=>{
 
 await fetch(`http://localhost:8080/api/registrations/approve/${id}`,{
-method:"POST"
-})
+method:"POST", credentials : "include"
+},)
 
 loadData()
 
@@ -45,7 +45,7 @@ loadData()
 const rejectReg = async(id)=>{
 
 await fetch(`http://localhost:8080/api/registrations/reject/${id}`,{
-method:"POST"
+method:"POST", credentials : "include"
 })
 
 loadData()

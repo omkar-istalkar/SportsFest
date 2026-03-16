@@ -9,12 +9,12 @@ const data = reg.dynamicData
 : {}
 
 const approve = async (id)=>{
-await axios.put(`${API}/approve/${id}`)
+await axios.put(`${API}/approve/${id}`,{},{withCredentials:true});
 reload()
 }
 
 const reject = async (id)=>{
-await axios.put(`${API}/reject/${id}`)
+await axios.put(`${API}/reject/${id}`,{},{withCredentials:true})
 reload()
 }
 

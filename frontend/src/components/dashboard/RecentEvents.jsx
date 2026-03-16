@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../services/api";
 import { CalendarDays, Users, User } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -10,7 +10,7 @@ const RecentEvents = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get("http://localhost:8080/api/dashboard/recent-events")
+    api.get("/api/dashboard/recent-events")
       .then(res => setEvents(res.data))
       .catch(err => console.error(err));
   }, []);
