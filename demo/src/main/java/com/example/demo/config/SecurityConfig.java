@@ -3,34 +3,47 @@ package com.example.demo.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.http.HttpStatus;
 
 import javax.servlet.http.HttpServletResponse;
 
 import com.example.demo.service.AdminService;
+import com.example.demo.service.UserService;
 
+@SuppressWarnings("deprecation")
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private AdminService adminDetailsService;
 
+    @Autowired
+    private UserService userDetailsService;
+
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    // AUTHENTICATION CONFIGURATION
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 
-        auth.userDetailsService(adminDetailsService)
-                .passwordEncoder(passwordEncoder());
+        auth
+            .userDetailsService(adminDetailsService)
+            .passwordEncoder(passwordEncoder());
+
+        auth
+            .userDetailsService(userDetailsService)
+            .passwordEncoder(passwordEncoder());
     }
 
+    // AUTHORIZATION CONFIGURATION
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
@@ -41,16 +54,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
             .authorizeRequests()
 
+            // Public routes
             .antMatchers(
                     "/",
                     "/login",
+                    "/register",
                     "/events/**",
-                    "/api/**"
+                    "/api/auth/**",
+                    "/api/public/**"
             ).permitAll()
 
-            .antMatchers("/admin/**").authenticated()
+            // Admin routes
+            .antMatchers("/admin/**").hasRole("ADMIN")
 
-            .anyRequest().permitAll()
+            // User routes
+            .antMatchers("/user/**").hasRole("USER")
+
+            // All other routes require authentication
+            .anyRequest().authenticated()
 
             .and()
 
@@ -62,9 +83,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
             .successHandler((request, response, authentication) -> {
 
+                String role = authentication.getAuthorities().iterator().next().getAuthority();
+
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.setContentType("application/json");
-                response.getWriter().write("{\"message\":\"Login Successful\"}");
+
+                response.getWriter().write(
+                        "{\"message\":\"Login Successful\",\"role\":\"" + role + "\"}"
+                );
             })
 
             .failureHandler((request, response, exception) -> {

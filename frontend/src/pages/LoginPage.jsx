@@ -7,33 +7,45 @@ export default function LoginPage() {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
 
-const login = async (e) => {
+  const login = async (e) => {
+    e.preventDefault();
 
-  e.preventDefault();
+    const formData = new URLSearchParams();
+    formData.append("userName", userName);
+    formData.append("password", password);
 
-  const formData = new URLSearchParams();
-  formData.append("userName", userName);
-  formData.append("password", password);
+    try {
 
-  try {
+      const res = await axios.post(
+        "http://localhost:8080/login",
+        formData,
+        { withCredentials: true }
+      );
 
-    const res = await axios.post(
-      "http://localhost:8080/login",
-      formData,
-      { withCredentials: true }
-    );
+      alert("Login successful");
 
-    alert("Login successful");
+      const role = res.data.role;
 
-    window.location.href = "/";   // React dashboard
+      // Store role for route protection
+      localStorage.setItem("role", role);
 
-  } catch (err) {
+      // Redirect based on role
+      if (role === "ROLE_ADMIN") {
+        window.location.href = "/";
+      } 
+      else if (role === "ROLE_USER") {
+        window.location.href = "/events";
+      } 
+      else {
+        window.location.href = "/";
+      }
 
-    alert("Invalid credentials");
+    } catch (err) {
 
-  }
+      alert("Invalid credentials");
 
-};
+    }
+  };
 
   return (
 
@@ -42,33 +54,49 @@ const login = async (e) => {
       <div className="bg-white shadow-lg p-8 rounded w-[350px]">
 
         <h2 className="text-xl font-bold mb-4 text-center">
-          SportsFest Admin Login
+          SportsFest Login
         </h2>
 
         <form onSubmit={login}>
 
           <input
-            className="border p-2 w-full mb-3"
-            placeholder="Username"
+            className="border p-2 w-full mb-3 rounded"
+            placeholder="Email / Username"
             value={userName}
-            onChange={(e)=>setUserName(e.target.value)}
+            onChange={(e) => setUserName(e.target.value)}
           />
 
           <input
             type="password"
-            className="border p-2 w-full mb-3"
+            className="border p-2 w-full mb-3 rounded"
             placeholder="Password"
             value={password}
-            onChange={(e)=>setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
           />
 
-          <button className="bg-blue-600 text-white w-full p-2 rounded">
+          <button
+            type="submit"
+            className="bg-blue-600 text-white w-full p-2 rounded hover:bg-blue-700 transition"
+          >
             Login
           </button>
 
         </form>
 
-        {/* Public options */}
+        {/* Registration Option */}
+
+        <div className="mt-4 text-center">
+
+          <Link
+            to="/register"
+            className="text-blue-600 hover:underline"
+          >
+            Create User Account
+          </Link>
+
+        </div>
+
+        {/* Public Options */}
 
         <div className="mt-6 border-t pt-4 text-center">
 
@@ -78,14 +106,14 @@ const login = async (e) => {
 
           <Link
             to="/events"
-            className="block bg-green-600 text-white p-2 rounded mb-2"
+            className="block bg-green-600 text-white p-2 rounded mb-2 hover:bg-green-700 transition"
           >
             Browse Events
           </Link>
 
           <Link
             to="/registration-status"
-            className="block bg-purple-600 text-white p-2 rounded"
+            className="block bg-purple-600 text-white p-2 rounded hover:bg-purple-700 transition"
           >
             Check Registration Status
           </Link>
@@ -97,5 +125,4 @@ const login = async (e) => {
     </div>
 
   );
-
 }

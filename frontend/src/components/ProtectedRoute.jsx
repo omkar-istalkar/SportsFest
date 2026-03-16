@@ -1,14 +1,16 @@
 import { Navigate } from "react-router-dom";
 
-export default function ProtectedRoute({ children }) {
+export default function ProtectedRoute({children,role}){
 
-  const isAuthenticated = true;
+const userRole = localStorage.getItem("role");
 
-  if(!isAuthenticated){
+if(!userRole){
+return <Navigate to="/login"/>
+}
 
-    return <Navigate to="/login" />
+if(role && role !== userRole){
+return <Navigate to="/login"/>
+}
 
-  }
-
-  return children;
+return children;
 }

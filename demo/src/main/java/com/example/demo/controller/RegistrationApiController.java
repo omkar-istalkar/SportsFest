@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.entity.Event;
 import com.example.demo.entity.Registration;
-import com.example.demo.enums.RegistrationStatus;
 import com.example.demo.repository.EventRepository;
 import com.example.demo.service.RegistrationService;
 import com.fasterxml.jackson.core.JsonProcessingException;

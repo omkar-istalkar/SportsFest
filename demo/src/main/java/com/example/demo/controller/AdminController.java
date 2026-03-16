@@ -200,7 +200,8 @@ public class AdminController {
 
 	    for (Registration reg : registrations) {
 	        try {
-	            Map<String, String> map =
+	            @SuppressWarnings("unchecked")
+				Map<String, String> map =
 	                    mapper.readValue(reg.getDynamicData(), Map.class);
 	            parsedDataList.add(map);
 	        } catch (Exception e) {
@@ -261,7 +262,8 @@ public class AdminController {
 	    // Parse dynamic JSON
 	    try {
 	    	ObjectMapper mapper = new ObjectMapper();
-	    	Map<String, String> dynamicData =
+	    	@SuppressWarnings("unchecked")
+			Map<String, String> dynamicData =
 	    	        mapper.readValue(reg.getDynamicData(), Map.class);
 
 	    	// Fetch all fields of this event

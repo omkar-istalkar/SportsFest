@@ -2,8 +2,6 @@ package com.example.demo.entity;
 
 import javax.persistence.*;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 @Entity
 @Table(name = "form_field")
 public class FormField 

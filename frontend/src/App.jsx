@@ -12,6 +12,7 @@ import EventRegisterPage from "./pages/EventRegisterPage.jsx";
 import RegistrationStatusPage from "./pages/RegistrationStatusPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import RegistrationSuccessPage from "./pages/RegistrationSuccessPage";
+import RegisterPage from "./pages/RegisterPage.jsx";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ const App = () => (
         {/* Existing Dashboard Pages */}
         <Route path="/events-dashboard" element={<Events />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage/>}/>
         <Route path="/registrations" element={<Registrations />} />
         <Route path="/revenue" element={<Revenue />} />
 

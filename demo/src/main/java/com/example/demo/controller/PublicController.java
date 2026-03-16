@@ -109,6 +109,7 @@ public class PublicController {
         return "check-status";
     }
 
+    @SuppressWarnings("unchecked")
     @PostMapping("/check-status")
     public String checkStatus(@RequestParam String registrationId, Model model) {
 
