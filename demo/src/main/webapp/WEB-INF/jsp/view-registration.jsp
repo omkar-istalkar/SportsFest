@@ -1,0 +1,30 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
+<div class="container-fluid">
+
+    <h5>Registration ID: ${registration.registrationId}</h5>
+    <p><strong>Status:</strong> ${registration.status}</p>
+    <p><strong>Registered At:</strong> ${registration.registeredAt}</p>
+
+    <hr>
+
+    <h6>Submitted Details</h6>
+
+    <c:if test="${not empty dynamicData}">
+		<table class="table table-bordered">
+		    <c:forEach var="entry" items="${dynamicData}">
+		        <tr>
+		            <th>${entry.key}</th>
+		            <td>${entry.value}</td>
+		        </tr>
+		    </c:forEach>
+		</table>
+    </c:if>
+
+    <c:if test="${empty dynamicData}">
+        <div class="alert alert-warning">
+            No dynamic data found.
+        </div>
+    </c:if>
+
+</div>

@@ -1,0 +1,62 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
+<div class="fade-in">
+
+    <form action="/admin/save-field/${eventId}" method="post">
+
+        <div class="mb-3">
+            <label class="form-label">Field Label</label>
+            <input type="text" name="label" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Field Type</label>
+            <select name="fieldType" class="form-select">
+                <option value="text">Text</option>
+                <option value="number">Number</option>
+                <option value="dropdown">Dropdown</option>
+                <option value="radio">Radio</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Options (Comma separated)</label>
+            <input type="text" name="options" class="form-control">
+            <small class="text-muted">
+                Required only for Dropdown or Radio fields
+            </small>
+        </div>
+
+        <div class="form-check mb-3">
+            <input type="checkbox" name="required" class="form-check-input" id="requiredCheck">
+            <label class="form-check-label" for="requiredCheck">
+                Required
+            </label>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+            <button type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal">
+                Cancel
+            </button>
+
+            <button type="submit" class="btn btn-primary">
+                Save Field
+            </button>
+        </div>
+
+    </form>
+
+</div>
+
+<style>
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>

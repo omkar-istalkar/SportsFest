@@ -1,0 +1,14 @@
+package com.example.demo.repository;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.example.demo.entity.FormField;
+
+public interface FormFieldRepository extends JpaRepository<FormField, Long>
+{
+	List<FormField> findByEventId(Long eventId);
+
+	void deleteByEventId(Long id);
+}

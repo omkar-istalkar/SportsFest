@@ -1,0 +1,87 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
+<div class="fade-in">
+
+    <form action="/admin/save-event" method="post">
+
+        <!-- Event Name -->
+        <div class="mb-3">
+            <label class="form-label">Event Name</label>
+            <input type="text" name="name" class="form-control" required>
+        </div>
+
+        <!-- Description -->
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea name="description" class="form-control" rows="3" required></textarea>
+        </div>
+
+        <!-- Deadline -->
+        <div class="mb-3">
+            <label class="form-label">Deadline</label>
+            <input type="date" name="deadline" class="form-control">
+        </div>
+
+        <!-- Registration Type -->
+        <div class="mb-3">
+            <label class="form-label">Registration Type</label>
+            <select name="registrationType" class="form-select" id="registrationType" required>
+                <option value="INDIVIDUAL">Individual</option>
+                <option value="TEAM">Team</option>
+            </select>
+        </div>
+
+        <!-- Team Size -->
+        <div class="mb-3" id="teamSizeContainer" style="display:none;">
+            <label class="form-label">Team Size</label>
+            <input type="number" name="teamSize" class="form-control" min="1">
+            <small class="text-muted">Only required for Team registration</small>
+        </div>
+
+        <!-- Active Checkbox -->
+        <div class="form-check mb-3">
+            <input type="checkbox" name="active" class="form-check-input" id="activeCheck">
+            <label class="form-check-label" for="activeCheck">Active</label>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex justify-content-end gap-2">
+            <button type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal">
+                Cancel
+            </button>
+
+            <button type="submit" class="btn btn-primary">
+                Save Event
+            </button>
+        </div>
+
+    </form>
+
+</div>
+
+<style>
+.fade-in {
+    animation: fadeIn 0.4s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<script>
+    // Show/Hide team size dynamically
+    document.addEventListener("change", function(e) {
+        if (e.target && e.target.id === "registrationType") {
+            const teamSize = document.getElementById("teamSizeContainer");
+            if (e.target.value === "TEAM") {
+                teamSize.style.display = "block";
+            } else {
+                teamSize.style.display = "none";
+            }
+        }
+    });
+</script>
