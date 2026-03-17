@@ -40,7 +40,7 @@ const RecentEvents = () => {
 
         {/* View All Button */}
         <button
-          onClick={() => navigate("/events")}
+          onClick={() => navigate("/events-dashboard")}
           className="text-xs px-3 py-1.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition font-medium"
         >
           View All →

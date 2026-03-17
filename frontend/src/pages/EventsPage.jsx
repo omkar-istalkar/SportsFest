@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../services/api";
+import Sidebar from "../components/dashboard/Sidebar";
+import Header from "../components/dashboard/Header";
 
 export default function EventsPage() {
 
@@ -11,68 +13,115 @@ export default function EventsPage() {
   }, []);
 
   const loadEvents = async () => {
-    const res = await api.get("/api/events");
-    setEvents(res.data);
-    console.log("Event Data:", res.data);
+    try {
+      const res = await api.get("/api/events");
+      setEvents(res.data);
+    } catch (error) {
+      console.error("Error loading events", error);
+    }
   };
 
   return (
+    <div className="flex bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 min-h-screen text-white">
 
-    <div className="min-h-screen bg-gradient-to-r from-slate-900 to-slate-800 text-white">
+      <Sidebar role="USER" />
 
-      {/* Header */}
-      <div className="flex justify-between items-center p-6 border-b border-gray-700">
+      <main className="flex-1 ml-[220px] p-8">
 
-        <h1 className="text-3xl font-bold tracking-wide">
-          SportsFest Events
-        </h1>
+        <Header role="USER" name="User" />
 
-        <Link
-          to="/login"
-          className="bg-gray-200 text-black px-4 py-2 rounded hover:bg-white transition"
-        >
-          Admin Login
-        </Link>
+        {/* Page Title */}
+        <div className="mb-10 mt-6">
 
-      </div>
+          <h1 className="text-4xl font-bold tracking-wide">
+            Explore SportsFest Events
+          </h1>
 
-      {/* Events Section */}
-      <div className="p-10">
+          <p className="text-gray-400 mt-2">
+            Register for upcoming competitions and activities.
+          </p>
 
-        <h2 className="text-4xl font-bold mb-10 text-center">
-          Available Events
-        </h2>
+        </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        {/* Events Grid */}
+        <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-8">
 
           {events.map((event) => (
 
             <div
               key={event.id}
-              className="bg-white text-gray-800 rounded-xl shadow-lg p-6 hover:scale-105 transition transform duration-300"
+              className="
+              group
+              relative
+              bg-gradient-to-br from-slate-800 to-slate-900
+              border border-slate-700
+              rounded-2xl
+              p-6
+              shadow-xl
+              transition
+              duration-300
+              hover:scale-105
+              hover:border-blue-500
+              hover:shadow-blue-900/30
+              "
             >
 
-              <h3 className="text-xl font-bold mb-2">
+              {/* Event Title */}
+              <h3 className="text-2xl font-semibold mb-2 group-hover:text-blue-400 transition">
+
                 {event.name}
+
               </h3>
 
-              <p className="text-gray-600 mb-4">
+              {/* Description */}
+              <p className="text-gray-400 text-sm mb-5">
+
                 {event.description}
+
               </p>
 
-              <div className="mb-5">
+              {/* Deadline */}
+              <div className="mb-6">
 
-                <span className="bg-red-100 text-red-600 px-3 py-1 rounded text-sm font-semibold">
-                  Deadline: {event.deadline}
+                <span className="
+                bg-red-500/20
+                text-red-400
+                px-3
+                py-1
+                rounded-full
+                text-xs
+                font-medium
+                ">
+
+                  Registration Deadline: {event.deadline}
+
                 </span>
 
               </div>
 
+              {/* Register Button */}
               <Link
                 to={`/register/${event.id}`}
-                className="block text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+                className="
+                block
+                text-center
+                bg-gradient-to-r
+                from-blue-600
+                to-indigo-600
+                py-2
+                rounded-lg
+                font-semibold
+                transition
+                duration-300
+                hover:from-blue-500
+                hover:to-indigo-500
+                hover:shadow-lg
+                hover:shadow-blue-900/40
+                "
               >
-                Register
+
+                Register Now
+
               </Link>
 
             </div>
@@ -81,20 +130,18 @@ export default function EventsPage() {
 
         </div>
 
-        {/* Status Button */}
+        {/* Empty State */}
+        {events.length === 0 && (
 
-        <div className="text-center mt-14">
+          <div className="text-center mt-20 text-gray-400">
 
-          <Link
-            to="/registration-status"
-            className="bg-gray-500 hover:bg-gray-600 px-6 py-3 rounded text-white"
-          >
-            Check Registration Status
-          </Link>
+            No events available right now.
 
-        </div>
+          </div>
 
-      </div>
+        )}
+
+      </main>
 
     </div>
   );

@@ -95,7 +95,7 @@ const UpcomingDeadlines = () => {
         </div>
 
         <a
-          href="/events"
+          href="/events-dashboard"
           className="text-sm flex items-center gap-1 text-primary hover:text-primary/80"
         >
           View All <ArrowRight size={16} />

@@ -15,6 +15,8 @@ import RegistrationSuccessPage from "./pages/RegistrationSuccessPage";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import UserDashboard from "./pages/UserDashboard.jsx";
 
+import UserPreviousRegistrations from "./pages/UserPreviousRegistrations.jsx";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -39,6 +41,7 @@ const App = () => (
         <Route path="/registration-success/:id" element={<RegistrationSuccessPage />} />
 
         <Route path="/user-dashboard" element={<UserDashboard />} />
+        <Route path="/user-previous-registrations" element={<UserPreviousRegistrations/>}/>
 
         {/* 404 */}
         <Route path="*" element={<NotFound />} />
