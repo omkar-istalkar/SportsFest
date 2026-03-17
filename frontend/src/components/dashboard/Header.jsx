@@ -1,37 +1,35 @@
 import { motion } from "framer-motion";
-import { Plus, ChevronDown, LogOut } from "lucide-react";
+import { ChevronDown, LogOut } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const Header = () => {
+const Header = ({ role = "ADMIN", name = "Admin" }) => {
 
   const [open, setOpen] = useState(false);
-  const navigate = useNavigate();
 
   const handleLogout = async () => {
 
-  try {
+    try {
 
-    await axios.post(
-      "http://localhost:8080/logout",
-      {},
-      { withCredentials: true }
-    );
+      await axios.post(
+        "http://localhost:8080/logout",
+        {},
+        { withCredentials: true }
+      );
 
-    alert("Logout success");
+      alert("Logout success");
 
-    window.location.href = "/login";
+      window.location.href = "/login";
 
-  } catch (error) {
+    } catch (error) {
 
-    console.error("Logout failed", error);
+      console.error("Logout failed", error);
 
-    alert("Logout failed");
+      alert("Logout failed");
 
-  }
+    }
 
-};
+  };
 
   return (
 
@@ -39,8 +37,7 @@ const Header = () => {
       initial={{ y: -12, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.35 }}
-      className="flex items-center justify-between mb-10
-      px-2 py-2"
+      className="flex items-center justify-between mb-10 px-2 py-2"
     >
 
       {/* LEFT SIDE */}
@@ -51,7 +48,9 @@ const Header = () => {
         </h2>
 
         <p className="text-sm text-muted-foreground mt-1">
-          Here's the latest overview of your events
+          {role === "ADMIN"
+            ? "Here's the latest overview of your events"
+            : "Browse events and manage your registrations"}
         </p>
 
       </div>
@@ -59,7 +58,6 @@ const Header = () => {
 
       {/* RIGHT SIDE */}
       <div className="flex items-center gap-5">
-
 
         {/* PROFILE */}
         <div className="relative">
@@ -88,12 +86,12 @@ const Header = () => {
               text-sm font-semibold text-blue-400
               "
             >
-              A
+              {name.charAt(0)}
             </div>
 
             {/* NAME */}
             <span className="text-sm text-muted-foreground font-medium">
-              Admin
+              {name}
             </span>
 
             <ChevronDown
@@ -140,7 +138,7 @@ const Header = () => {
           )}
 
         </div>
-          
+
       </div>
 
     </motion.header>

@@ -1,6 +1,13 @@
 import { useState } from "react";
 import api from "../services/api";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+
+import ParticlesBackground from "../components/ParticlesBackground";
+import GradientMesh from "../components/GradientMesh";
+import CursorGlow from "../components/CursorGlow";
+import OrbitIcons from "../components/OrbitIcons";
+import ParallaxContainer from "../components/ParallaxContainer";
 
 export default function LoginPage() {
 
@@ -11,16 +18,10 @@ export default function LoginPage() {
 
     e.preventDefault();
 
-    console.log("====== LOGIN ATTEMPT ======");
-    console.log("Username entered:", userName);
-    console.log("Password entered:", password);
-
     const formData = new URLSearchParams();
 
     formData.append("username", userName);
     formData.append("password", password);
-
-    console.log("Payload being sent:", formData.toString());
 
     try {
 
@@ -30,10 +31,6 @@ export default function LoginPage() {
         }
       });
 
-      console.log("Login response:", res.data);
-
-      alert("Login successful");
-
       const role = res.data.role;
 
       localStorage.setItem("role", role);
@@ -41,107 +38,153 @@ export default function LoginPage() {
       if (role === "ROLE_ADMIN") {
         window.location.href = "/";
       }
-
       else if (role === "ROLE_USER") {
-        window.location.href = "/events";
-      }
-
-      else {
-        window.location.href = "/";
+        window.location.href = "/user-dashboard";
       }
 
     }
     catch (err) {
 
-      console.error("LOGIN ERROR:", err);
-
-      console.error("Server error response:", err.response?.data);
-
       alert(err.response?.data?.message || "Invalid credentials");
+
     }
+
   };
 
   return (
 
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-[#0f172a] relative overflow-hidden">
 
-      <div className="bg-white shadow-lg p-8 rounded w-[350px]">
+      {/* Background Effects */}
 
-        <h2 className="text-xl font-bold mb-4 text-center">
-          SportsFest Login
-        </h2>
+      <GradientMesh />
+      <ParticlesBackground />
+      <CursorGlow />
 
-        <form onSubmit={login}>
+      {/* Orbit animation around card */}
 
-          <input
-            className="border p-2 w-full mb-3 rounded"
-            placeholder="Email / Username"
-            value={userName}
-            onChange={(e) => {
+      <OrbitIcons />
 
-              console.log("Typing username:", e.target.value);
-              setUserName(e.target.value);
+      {/* Parallax container */}
 
-            }}
-          />
+      <ParallaxContainer>
 
-          <input
-            type="password"
-            className="border p-2 w-full mb-3 rounded"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => {
+        {/* Floating sports icons */}
 
-              console.log("Typing password:", e.target.value);
-              setPassword(e.target.value);
-
-            }}
-          />
-
-          <button
-            type="submit"
-            className="bg-blue-600 text-white w-full p-2 rounded hover:bg-blue-700 transition"
-          >
-            Login
-          </button>
-
-        </form>
-
-        <div className="mt-4 text-center">
-
-          <Link
-            to="/register"
-            className="text-blue-600 hover:underline"
-          >
-            Create User Account
-          </Link>
-
+        <div className="absolute top-24 left-24 text-white/20 text-5xl animate-bounce">
+          ⚽
         </div>
 
-        <div className="mt-6 border-t pt-4 text-center">
+        <div className="absolute bottom-24 right-32 text-white/20 text-5xl animate-pulse">
+          🏀
+        </div>
 
-          <p className="text-gray-600 mb-2">
-            Looking for events?
+        <div className="absolute top-40 right-20 text-white/20 text-5xl animate-bounce">
+          🏆
+        </div>
+
+
+        {/* Login Card */}
+
+        <motion.div
+
+          initial={{ opacity: 0, scale: 0.9, y: 40 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+
+          whileHover={{
+            rotateX: 6,
+            rotateY: -6,
+            scale: 1.02
+          }}
+
+          className="
+          glass-card
+          p-10
+          w-[380px]
+          text-white
+          relative
+          z-10
+          "
+
+        >
+
+          {/* Title */}
+
+          <h2 className="text-3xl font-bold text-center mb-6 neon-text">
+            🏆 SportsFest
+          </h2>
+
+          <p className="text-center text-sm text-muted-foreground mb-6">
+            Sign in to manage your events
           </p>
 
-          <Link
-            to="/events"
-            className="block bg-green-600 text-white p-2 rounded mb-2 hover:bg-green-700 transition"
-          >
-            Browse Events
-          </Link>
 
-          <Link
-            to="/registration-status"
-            className="block bg-purple-600 text-white p-2 rounded hover:bg-purple-700 transition"
-          >
-            Check Registration Status
-          </Link>
+          {/* Form */}
 
-        </div>
+          <form onSubmit={login} className="space-y-4">
 
-      </div>
+            <input
+              className="search-input w-full"
+              placeholder="Email / Username"
+              value={userName}
+              onChange={(e)=>setUserName(e.target.value)}
+            />
+
+            <input
+              type="password"
+              className="search-input w-full"
+              placeholder="Password"
+              value={password}
+              onChange={(e)=>setPassword(e.target.value)}
+            />
+
+            <motion.button
+
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+
+              className="
+              w-full
+              py-2
+              rounded-lg
+              bg-gradient-to-r
+              from-blue-500
+              to-purple-600
+              font-semibold
+              shadow-lg
+              hover:shadow-purple-500/40
+              transition
+              "
+            >
+              Login
+
+            </motion.button>
+
+          </form>
+
+
+          {/* Register link */}
+
+          <div className="mt-6 text-center text-sm text-muted-foreground">
+
+            Don't have an account?
+
+            <Link
+              to="/register"
+              className="ml-1 text-blue-400 hover:text-blue-300 hover:underline"
+            >
+              Create User Account
+            </Link>
+
+          </div>
+
+        </motion.div>
+
+      </ParallaxContainer>
 
     </div>
+
   );
+
 }

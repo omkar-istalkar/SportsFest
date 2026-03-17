@@ -52,7 +52,7 @@ const Index = () => {
 
       <main className="flex-1 ml-[220px] p-8">
 
-        <Header />
+        <Header role="ADMIN" name="Admin" />
 
         <StatCards />
 

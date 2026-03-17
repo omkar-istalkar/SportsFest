@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { register } from "../services/authService";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { motion } from "framer-motion";
+
+import ParticlesBackground from "../components/ParticlesBackground";
+import GradientMesh from "../components/GradientMesh";
+import CursorGlow from "../components/CursorGlow";
+import OrbitIcons from "../components/OrbitIcons";
+import ParallaxContainer from "../components/ParallaxContainer";
 
 export default function RegisterPage() {
 
@@ -13,10 +20,12 @@ export default function RegisterPage() {
   });
 
   const handleChange = (e) => {
+
     setForm({
       ...form,
       [e.target.name]: e.target.value
     });
+
   };
 
   const handleSubmit = async (e) => {
@@ -39,107 +48,146 @@ export default function RegisterPage() {
 
   };
 
-  const styles = {
-
-    page: {
-      height: "100vh",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      background: "linear-gradient(135deg,#667eea,#764ba2)",
-      fontFamily: "Arial"
-    },
-
-    card: {
-      width: "350px",
-      padding: "40px",
-      borderRadius: "12px",
-      background: "white",
-      boxShadow: "0 10px 25px rgba(0,0,0,0.2)",
-      textAlign: "center",
-      animation: "fadeIn 0.6s ease"
-    },
-
-    title: {
-      marginBottom: "25px",
-      fontSize: "24px",
-      fontWeight: "bold",
-      color: "#333"
-    },
-
-    input: {
-      width: "100%",
-      padding: "12px",
-      marginBottom: "15px",
-      borderRadius: "6px",
-      border: "1px solid #ccc",
-      fontSize: "14px",
-      outline: "none"
-    },
-
-    button: {
-      width: "100%",
-      padding: "12px",
-      background: "#667eea",
-      color: "white",
-      border: "none",
-      borderRadius: "6px",
-      fontSize: "16px",
-      cursor: "pointer",
-      transition: "0.3s"
-    }
-
-  };
-
   return (
 
-    <div style={styles.page}>
+    <div className="min-h-screen flex items-center justify-center bg-[#0f172a] relative overflow-hidden">
 
-      <div style={styles.card}>
+      {/* Background Effects */}
 
-        <h2 style={styles.title}>
-          Create Account
-        </h2>
+      <GradientMesh />
+      <ParticlesBackground />
+      <CursorGlow />
+      <OrbitIcons />
 
-        <form onSubmit={handleSubmit}>
+      {/* Parallax container */}
 
-          <input
-            name="name"
-            placeholder="Full Name"
-            value={form.name}
-            onChange={handleChange}
-            style={styles.input}
-          />
+      <ParallaxContainer>
 
-          <input
-            name="email"
-            placeholder="Email"
-            value={form.email}
-            onChange={handleChange}
-            style={styles.input}
-          />
+        {/* Floating sports icons */}
 
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={form.password}
-            onChange={handleChange}
-            style={styles.input}
-          />
+        <div className="absolute top-24 left-24 text-white/20 text-5xl animate-bounce">
+          ⚽
+        </div>
 
-          <button
-            type="submit"
-            style={styles.button}
-            onMouseOver={(e)=>e.target.style.background="#5a67d8"}
-            onMouseOut={(e)=>e.target.style.background="#667eea"}
-          >
-            Register
-          </button>
+        <div className="absolute bottom-24 right-32 text-white/20 text-5xl animate-pulse">
+          🏀
+        </div>
 
-        </form>
+        <div className="absolute top-40 right-20 text-white/20 text-5xl animate-bounce">
+          🏆
+        </div>
 
-      </div>
+        {/* Register Card */}
+
+        <motion.div
+
+          initial={{ opacity: 0, scale: 0.9, y: 40 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+
+          whileHover={{
+            rotateX: 6,
+            rotateY: -6,
+            scale: 1.02
+          }}
+
+          className="
+          glass-card
+          p-10
+          w-[380px]
+          text-white
+          relative
+          z-10
+          "
+
+        >
+
+          {/* Title */}
+
+          <h2 className="text-3xl font-bold text-center mb-6 neon-text">
+            🏆 SportsFest
+          </h2>
+
+          <p className="text-center text-sm text-muted-foreground mb-6">
+            Create your account
+          </p>
+
+          {/* Form */}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+
+            <input
+              name="name"
+              placeholder="Full Name"
+              value={form.name}
+              onChange={handleChange}
+              required
+              className="search-input w-full"
+            />
+
+            <input
+              name="email"
+              placeholder="Email"
+              value={form.email}
+              onChange={handleChange}
+              required
+              className="search-input w-full"
+            />
+
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={form.password}
+              onChange={handleChange}
+              required
+              className="search-input w-full"
+            />
+
+            <motion.button
+
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+
+              type="submit"
+
+              className="
+              w-full
+              py-2
+              rounded-lg
+              bg-gradient-to-r
+              from-blue-500
+              to-purple-600
+              font-semibold
+              shadow-lg
+              hover:shadow-purple-500/40
+              transition
+              "
+            >
+              Register
+
+            </motion.button>
+
+          </form>
+
+          {/* Login link */}
+
+          <div className="mt-6 text-center text-sm text-muted-foreground">
+
+            Already have an account?
+
+            <Link
+              to="/login"
+              className="ml-1 text-blue-400 hover:text-blue-300 hover:underline"
+            >
+              Login
+            </Link>
+
+          </div>
+
+        </motion.div>
+
+      </ParallaxContainer>
 
     </div>
 

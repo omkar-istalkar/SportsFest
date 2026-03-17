@@ -13,6 +13,7 @@ import RegistrationStatusPage from "./pages/RegistrationStatusPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import RegistrationSuccessPage from "./pages/RegistrationSuccessPage";
 import RegisterPage from "./pages/RegisterPage.jsx";
+import UserDashboard from "./pages/UserDashboard.jsx";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,8 @@ const App = () => (
         <Route path="/register/:id" element={<EventRegisterPage />} />
         <Route path="/registration-status" element={<RegistrationStatusPage />} />
         <Route path="/registration-success/:id" element={<RegistrationSuccessPage />} />
+
+        <Route path="/user-dashboard" element={<UserDashboard />} />
 
         {/* 404 */}
         <Route path="*" element={<NotFound />} />

@@ -34,3 +34,7 @@ build/
 
 # Application config
 src/main/resources/application.properties
+
+
+*.zip
+*.mp4

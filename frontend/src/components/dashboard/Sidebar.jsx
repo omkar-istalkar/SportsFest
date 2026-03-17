@@ -8,18 +8,33 @@ import {
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
-const navItems = [
+/* ---------------- ADMIN NAVIGATION ---------------- */
+
+const adminNavItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/" },
   { icon: CalendarDays, label: "Events", path: "/events-dashboard" },
   { icon: ClipboardList, label: "Registrations", path: "/registrations" },
   { icon: DollarSign, label: "Revenue", path: "/revenue" },
 ];
 
+/* ---------------- USER NAVIGATION ---------------- */
+
+const userNavItems = [
+  { icon: LayoutDashboard, label: "Dashboard", path: "/user-dashboard" },
+  { icon: CalendarDays, label: "List of Events", path: "/events" },
+  { icon: ClipboardList, label: "Previous Applied Events", path: "/registration-status" },
+];
+
+/* ---------------- BOTTOM MENU ---------------- */
+
 const bottomItems = [
   { icon: HelpCircle, label: "Help & Support", path: "/help" },
 ];
 
-const Sidebar = () => {
+const Sidebar = ({ role = "ADMIN" }) => {
+
+  const navItems = role === "USER" ? userNavItems : adminNavItems;
+
   return (
     <motion.aside
       initial={{ x: -20, opacity: 0 }}
@@ -29,7 +44,9 @@ const Sidebar = () => {
     >
 
       {/* LOGO */}
+
       <div className="p-5 flex items-center gap-3">
+
         <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
           <span className="text-xl">🏆</span>
         </div>
@@ -43,11 +60,13 @@ const Sidebar = () => {
             Event Management
           </p>
         </div>
+
       </div>
 
       <hr />
 
       {/* NAVIGATION */}
+
       <nav className="flex-1 px-3 mt-4 space-y-1">
 
         {navItems.map((item, i) => {
@@ -89,11 +108,10 @@ const Sidebar = () => {
 
       </nav>
 
-
       <hr className="border-border my-2" />
 
-
       {/* BOTTOM ITEMS */}
+
       <div className="px-3 pb-4 space-y-1">
 
         {bottomItems.map((item) => {
