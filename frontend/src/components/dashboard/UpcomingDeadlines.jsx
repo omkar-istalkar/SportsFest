@@ -55,22 +55,16 @@ const UpcomingDeadlines = () => {
   const getStatusStyle = (status) => {
 
     switch (status) {
-
       case "urgent":
         return "text-red-400";
-
       case "soon":
         return "text-yellow-400";
-
       case "safe":
         return "text-green-400";
-
       case "expired":
         return "text-gray-400";
-
       default:
         return "text-muted-foreground";
-
     }
 
   };
@@ -81,22 +75,23 @@ const UpcomingDeadlines = () => {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.6 }}
-      className="glass-card p-6"
+      className="glass-card p-4 sm:p-6"
     >
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4 sm:mb-5">
 
-        <div className="flex items-center gap-2">
-          <CalendarClock className="text-primary" size={20} />
-          <h2 className="text-lg font-semibold text-foreground">
+        <div className="flex items-center gap-2 min-w-0">
+          <CalendarClock className="text-primary shrink-0" size={20} />
+
+          <h2 className="text-base sm:text-lg font-semibold text-foreground truncate">
             Upcoming Deadlines
           </h2>
         </div>
 
         <a
           href="/events-dashboard"
-          className="text-sm flex items-center gap-1 text-primary hover:text-primary/80"
+          className="text-xs sm:text-sm flex items-center gap-1 text-primary hover:text-primary/80"
         >
           View All <ArrowRight size={16} />
         </a>
@@ -106,13 +101,13 @@ const UpcomingDeadlines = () => {
 
       {events.length === 0 ? (
 
-        <div className="text-center text-muted-foreground py-8 text-sm">
+        <div className="text-center text-muted-foreground py-6 sm:py-8 text-sm">
           No upcoming deadlines
         </div>
 
       ) : (
 
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
 
           {events.map((event, i) => (
 
@@ -126,23 +121,25 @@ const UpcomingDeadlines = () => {
               whileHover={{ scale: 1.02 }}
 
               className="
-              flex items-center justify-between
-              p-4 rounded-xl border border-border
-              bg-muted/20 backdrop-blur
-              hover:border-yellow-400/70
-              hover:shadow-[0_0_18px_rgba(250,204,21,0.25)]
-              transition-all duration-300 cursor-pointer
+                flex flex-col sm:flex-row
+                sm:items-center sm:justify-between
+                gap-2 sm:gap-0
+                p-3 sm:p-4 rounded-xl border border-border
+                bg-muted/20 backdrop-blur
+                hover:border-yellow-400/70
+                hover:shadow-[0_0_18px_rgba(250,204,21,0.25)]
+                transition-all duration-300 cursor-pointer
               "
             >
 
               {/* Left */}
-              <div>
+              <div className="min-w-0">
 
-                <p className="text-sm font-medium text-foreground">
+                <p className="text-sm font-medium text-foreground truncate">
                   {event.name}
                 </p>
 
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground truncate">
                   Deadline: {new Date(event.deadline).toLocaleDateString()}
                 </p>
 
@@ -150,7 +147,9 @@ const UpcomingDeadlines = () => {
 
 
               {/* Right status */}
-              <span className={`text-xs font-medium ${getStatusStyle(event.status)}`}>
+              <span
+                className={`text-xs font-medium whitespace-nowrap ${getStatusStyle(event.status)}`}
+              >
 
                 {event.status === "expired" && "Expired"}
 

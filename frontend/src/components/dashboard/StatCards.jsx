@@ -99,7 +99,7 @@ const StatCards = () => {
 
   return (
 
-    <div className="grid grid-cols-4 gap-6 mb-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
 
       {cards.map((card, i) => {
 
@@ -121,14 +121,14 @@ const StatCards = () => {
               rotateY: -6
             }}
 
-            className={`relative p-6 rounded-xl border border-border
+            className={`relative p-4 sm:p-6 rounded-xl border border-border
             bg-card backdrop-blur-xl
             shadow-lg ${card.glow}
             hover:shadow-2xl
             transition-all duration-300 cursor-pointer overflow-hidden`}
           >
 
-            {/* Soft Gradient Background */}
+            {/* Gradient */}
             <div
               className={`absolute inset-0 bg-gradient-to-br ${card.gradient}`}
             />
@@ -137,18 +137,18 @@ const StatCards = () => {
 
               <div>
 
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   {card.label}
                 </p>
 
-                <p className="text-3xl font-bold text-foreground mt-1">
+                <p className="text-2xl sm:text-3xl font-bold text-foreground mt-1">
                   {card.value}
                 </p>
 
               </div>
 
-              <div className="p-3 rounded-lg bg-white/5 backdrop-blur-md border border-white/10">
-                <Icon size={22} className={card.iconColor} />
+              <div className="p-2 sm:p-3 rounded-lg bg-white/5 backdrop-blur-md border border-white/10">
+                <Icon size={20} className={card.iconColor} />
               </div>
 
             </div>

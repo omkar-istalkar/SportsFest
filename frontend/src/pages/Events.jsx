@@ -42,12 +42,9 @@ const Events = () => {
   }, [])
 
   const confirmDeleteEvent = async () => {
-
     await deleteEvent(deleteId)
-
     setConfirmDelete(false)
     setDeleteId(null)
-
     loadEvents()
   }
 
@@ -61,29 +58,27 @@ const Events = () => {
 
       <Sidebar />
 
-      <div className="flex-1 ml-[220px]">
+      <div className="flex-1 ml-0 md:ml-[220px]">
 
         <Header title="Events" />
 
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
 
           {/* Header */}
-
           <motion.div
             initial={{ opacity: 0, y: -15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex justify-between items-center mb-6"
+            className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6"
           >
 
-            <h1 className="text-xl font-semibold">
+            <h1 className="text-lg sm:text-xl font-semibold">
               All Events
             </h1>
 
             <button
               className="flex items-center gap-2 px-4 py-2 rounded-md
               bg-blue-500/20 text-blue-400
-              hover:bg-blue-500/30 hover:scale-[1.03]
-              transition"
+              hover:bg-blue-500/30 transition text-sm"
               onClick={() => setModal("create")}
             >
               <Calendar size={16}/>
@@ -93,197 +88,134 @@ const Events = () => {
           </motion.div>
 
           {/* Stats */}
-
-          <div className="grid grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
 
             <div className="glass-card p-4 rounded-xl border border-border">
               <p className="text-muted-foreground text-sm">Total Events</p>
-              <h2 className="text-xl font-semibold">{total}</h2>
+              <h2 className="text-lg sm:text-xl font-semibold">{total}</h2>
             </div>
 
             <div className="glass-card p-4 rounded-xl border border-border">
               <p className="text-muted-foreground text-sm">Active Events</p>
-              <h2 className="text-xl font-semibold text-green-400">{active}</h2>
+              <h2 className="text-lg sm:text-xl font-semibold text-green-400">{active}</h2>
             </div>
 
             <div className="glass-card p-4 rounded-xl border border-border">
               <p className="text-muted-foreground text-sm">Inactive Events</p>
-              <h2 className="text-xl font-semibold text-gray-400">{inactive}</h2>
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-400">{inactive}</h2>
             </div>
 
           </div>
 
           {/* Table */}
-
           <div className="glass-card rounded-xl border border-border overflow-hidden">
 
-            <table className="w-full text-sm">
+            <div className="overflow-x-auto">
 
-              <thead className="border-b border-border/40 text-muted-foreground">
+              <table className="min-w-[900px] w-full text-sm">
 
-                <tr>
+                <thead className="border-b border-border/40 text-muted-foreground">
 
-                  <th className="p-4 text-left">ID</th>
-                  <th className="text-left">Name</th>
-                  <th className="text-left">Deadline</th>
-                  <th className="text-left">Status</th>
-                  <th className="text-left">Actions</th>
+                  <tr>
+                    <th className="p-4 text-left">ID</th>
+                    <th className="text-left">Name</th>
+                    <th className="text-left">Deadline</th>
+                    <th className="text-left">Status</th>
+                    <th className="text-left">Actions</th>
+                  </tr>
 
-                </tr>
+                </thead>
 
-              </thead>
+                <tbody>
 
-              <tbody>
+                  {events.map((event, i) => (
 
-                {events.map((event, i) => (
+                    <motion.tr
+                      key={event.id}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                      className="border-b border-border/40 hover:bg-muted/10 transition-all"
+                    >
 
-                  <motion.tr
-                    key={event.id}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    className="border-b border-border/40
-                    hover:bg-muted/10
-                    hover:ring-1 hover:ring-yellow-500/40
-                    transition-all duration-200"
-                  >
+                      <td className="p-4 whitespace-nowrap">{event.id}</td>
 
-                    <td className="p-4">{event.id}</td>
+                      <td className="font-medium max-w-[200px] truncate">
+                        {event.name}
+                      </td>
 
-                    <td className="font-medium">
-                      {event.name}
-                    </td>
+                      <td className="whitespace-nowrap">{event.deadline}</td>
 
-                    <td>{event.deadline}</td>
+                      {/* Status */}
+                      <td>
 
-                    {/* Status */}
+                        <div className="flex items-center gap-2 flex-wrap">
 
-                    <td>
-
-                      <div className="flex items-center gap-3">
-
-                        <span
-                          className={`px-3 py-1 text-xs rounded-full
-                          ${event.active
-                            ? "bg-green-500/20 text-green-400"
-                            : "bg-gray-500/20 text-gray-400"
-                          }`}
-                        >
-                          {event.active ? "Active" : "Inactive"}
-                        </span>
-
-                        {/* Toggle */}
-
-                        <label className="relative inline-flex items-center cursor-pointer">
+                          <span
+                            className={`px-3 py-1 text-xs rounded-full
+                            ${event.active
+                              ? "bg-green-500/20 text-green-400"
+                              : "bg-gray-500/20 text-gray-400"
+                            }`}
+                          >
+                            {event.active ? "Active" : "Inactive"}
+                          </span>
 
                           <input
                             type="checkbox"
-                            className="sr-only peer"
                             checked={event.active}
                             onChange={() =>
                               toggleEvent(event.id).then(loadEvents)
                             }
                           />
 
-                          <div
-                            className="w-10 h-5 bg-gray-600 rounded-full
-                            peer-checked:bg-green-500
-                            after:content-['']
-                            after:absolute after:top-[2px] after:left-[2px]
-                            after:bg-white after:h-4 after:w-4
-                            after:rounded-full after:transition-all
-                            peer-checked:after:translate-x-5"
-                          ></div>
+                        </div>
 
-                        </label>
+                      </td>
 
-                      </div>
+                      {/* Actions */}
+                      <td>
 
-                    </td>
+                        <div className="flex flex-wrap gap-2 py-2">
 
-                    {/* Actions */}
+                          <button className="px-2 py-1 text-xs bg-cyan-500/20 text-cyan-400 rounded"
+                            onClick={()=>{setSelected(event); setModal("fields")}}>
+                            Fields
+                          </button>
 
-                    <td className="flex items-center gap-4 py-3">
+                          <button className="px-2 py-1 text-xs bg-yellow-500/20 text-yellow-400 rounded"
+                            onClick={()=>{setSelected(event); setModal("edit")}}>
+                            Edit
+                          </button>
 
-                      <button
-                        className="flex items-center gap-1 px-3 py-[6px] rounded-md
-                        bg-cyan-500/20 text-cyan-400
-                        hover:bg-cyan-500/30 hover:scale-[1.04]
-                        transition"
-                        onClick={()=>{
-                          setSelected(event)
-                          setModal("fields")
-                        }}
-                      >
-                        <List size={14}/>
-                        Fields
-                      </button>
+                          <button className="px-2 py-1 text-xs bg-red-500/20 text-red-400 rounded"
+                            onClick={()=>{setDeleteId(event.id); setConfirmDelete(true)}}>
+                            Delete
+                          </button>
 
-                      <button
-                        className="flex items-center gap-1 px-3 py-[6px] rounded-md
-                        bg-yellow-500/20 text-yellow-400
-                        hover:bg-yellow-500/30 hover:scale-[1.04]
-                        transition"
-                        onClick={()=>{
-                          setSelected(event)
-                          setModal("edit")
-                        }}
-                      >
-                        <Pencil size={14}/>
-                        Edit
-                      </button>
+                          <button className="px-2 py-1 text-xs bg-blue-500/20 text-blue-400 rounded"
+                            onClick={()=>{setSelected(event); setModal("preview")}}>
+                            Preview
+                          </button>
 
-                      <button
-                        className="flex items-center gap-1 px-3 py-[6px] rounded-md
-                        bg-red-500/20 text-red-400
-                        hover:bg-red-500/30 hover:scale-[1.04]
-                        transition"
-                        onClick={()=>{
-                          setDeleteId(event.id)
-                          setConfirmDelete(true)
-                        }}
-                      >
-                        <Trash2 size={14}/>
-                        Delete
-                      </button>
+                          <button className="px-2 py-1 text-xs bg-gray-700 text-white rounded"
+                            onClick={()=>{setSelected(event); setModal("responses")}}>
+                            Responses
+                          </button>
 
-                      <button
-                        className="flex items-center gap-1 px-3 py-[6px] rounded-md
-                        bg-blue-500/20 text-blue-400
-                        hover:bg-blue-500/30 hover:scale-[1.04]
-                        transition"
-                        onClick={()=>{
-                          setSelected(event)
-                          setModal("preview")
-                        }}
-                      >
-                        <Eye size={14}/>
-                        Preview
-                      </button>
+                        </div>
 
-                      <button
-                        className="flex items-center gap-1 px-3 py-[6px] rounded-md
-                        bg-gray-700 text-white
-                        hover:bg-gray-600 hover:scale-[1.04]
-                        transition"
-                        onClick={()=>{
-                          setSelected(event)
-                          setModal("responses")
-                        }}
-                      >
-                        <Users size={14}/>
-                        Responses
-                      </button>
+                      </td>
 
-                    </td>
+                    </motion.tr>
 
-                  </motion.tr>
+                  ))}
 
-                ))}
+                </tbody>
 
-              </tbody>
+              </table>
 
-            </table>
+            </div>
 
           </div>
 
@@ -292,66 +224,34 @@ const Events = () => {
       </div>
 
       {/* Modals */}
-
-      {modal==="create" &&
-        <EventModal close={()=>setModal(null)} reload={loadEvents}/>
-      }
-
-      {modal==="edit" &&
-        <EventModal event={selected} close={()=>setModal(null)} reload={loadEvents}/>
-      }
-
-      {modal==="fields" &&
-        <FieldsModal event={selected} close={()=>setModal(null)}/>
-      }
-
-      {modal==="preview" &&
-        <PreviewModal event={selected} close={()=>setModal(null)}/>
-      }
-
-      {modal==="responses" &&
-        <ResponsesModal event={selected} close={()=>setModal(null)}/>
-      }
+      {modal==="create" && <EventModal close={()=>setModal(null)} reload={loadEvents}/>}
+      {modal==="edit" && <EventModal event={selected} close={()=>setModal(null)} reload={loadEvents}/>}
+      {modal==="fields" && <FieldsModal event={selected} close={()=>setModal(null)}/>}
+      {modal==="preview" && <PreviewModal event={selected} close={()=>setModal(null)}/>}
+      {modal==="responses" && <ResponsesModal event={selected} close={()=>setModal(null)}/>}
 
       {/* Delete Confirmation */}
-
       {confirmDelete && (
-
-        <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
-
-          <div className="bg-card border border-border rounded-xl p-6 w-[360px]">
-
-            <h2 className="text-lg font-semibold mb-2">
-              Delete Event
-            </h2>
-
-            <p className="text-sm text-muted-foreground mb-5">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50 p-3">
+          <div className="bg-card border border-border rounded-xl p-4 sm:p-6 w-full max-w-sm">
+            <h2 className="text-lg font-semibold mb-2">Delete Event</h2>
+            <p className="text-sm text-muted-foreground mb-4">
               Are you sure you want to delete this event?
-              This action cannot be undone.
             </p>
 
-            <div className="flex justify-end gap-3">
-
-              <button
-                className="px-4 py-2 rounded-md bg-gray-600 text-white"
-                onClick={()=>setConfirmDelete(false)}
-              >
+            <div className="flex flex-col sm:flex-row justify-end gap-2">
+              <button className="px-4 py-2 bg-gray-600 text-white rounded"
+                onClick={()=>setConfirmDelete(false)}>
                 Cancel
               </button>
 
-              <button
-                className="px-4 py-2 rounded-md bg-red-600 text-white"
-                onClick={confirmDeleteEvent}
-              >
+              <button className="px-4 py-2 bg-red-600 text-white rounded"
+                onClick={confirmDeleteEvent}>
                 Delete
               </button>
-
             </div>
-
           </div>
-
         </div>
-
       )}
 
     </div>

@@ -39,8 +39,6 @@ export default function DynamicForm({ fields = [], eventId }) {
         data,{withCredentials:true}
       );
 
-      console.log("Registration response:", res.data);
-
       const regId =
         res.data.id ||
         res.data.registrationId ||
@@ -68,7 +66,10 @@ export default function DynamicForm({ fields = [], eventId }) {
 
   return (
 
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-4 sm:space-y-5 w-full max-w-2xl mx-auto"
+    >
 
       {fields.map((field) => {
 
@@ -83,7 +84,7 @@ export default function DynamicForm({ fields = [], eventId }) {
           return (
             <div key={field.id}>
 
-              <label className="block mb-1 font-semibold">
+              <label className="block mb-1 font-semibold text-sm sm:text-base break-words">
                 {label} {field.required && "*"}
               </label>
 
@@ -92,7 +93,7 @@ export default function DynamicForm({ fields = [], eventId }) {
                 name={field.id}
                 required={field.required}
                 onChange={handleChange}
-                className="border p-2 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="border p-2.5 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
 
             </div>
@@ -107,26 +108,30 @@ export default function DynamicForm({ fields = [], eventId }) {
           return (
             <div key={field.id}>
 
-              <label className="block mb-2 font-semibold">
+              <label className="block mb-2 font-semibold text-sm sm:text-base break-words">
                 {label} {field.required && "*"}
               </label>
 
-              {options.map((opt, index) => (
+              <div className="flex flex-col gap-2">
 
-                <label key={index} className="flex items-center gap-2 mb-1">
+                {options.map((opt, index) => (
 
-                  <input
-                    type="radio"
-                    name={field.id}
-                    value={opt}
-                    onChange={handleChange}
-                  />
+                  <label key={index} className="flex items-center gap-2 text-sm sm:text-base">
 
-                  {opt}
+                    <input
+                      type="radio"
+                      name={field.id}
+                      value={opt}
+                      onChange={handleChange}
+                    />
 
-                </label>
+                    {opt}
 
-              ))}
+                  </label>
+
+                ))}
+
+              </div>
 
             </div>
           );
@@ -140,14 +145,14 @@ export default function DynamicForm({ fields = [], eventId }) {
           return (
             <div key={field.id}>
 
-              <label className="block mb-1 font-semibold">
+              <label className="block mb-1 font-semibold text-sm sm:text-base break-words">
                 {label}
               </label>
 
               <select
                 name={field.id}
                 onChange={handleChange}
-                className="border p-2 w-full rounded"
+                className="border p-2.5 w-full rounded"
               >
 
                 <option value="">Select</option>
@@ -172,14 +177,14 @@ export default function DynamicForm({ fields = [], eventId }) {
           return (
             <div key={field.id}>
 
-              <label className="block mb-1 font-semibold">
+              <label className="block mb-1 font-semibold text-sm sm:text-base break-words">
                 {label}
               </label>
 
               <textarea
                 name={field.id}
                 onChange={handleChange}
-                className="border p-2 w-full rounded"
+                className="border p-2.5 w-full rounded"
               />
 
             </div>
@@ -192,15 +197,16 @@ export default function DynamicForm({ fields = [], eventId }) {
         if (type === "CHECKBOX") {
 
           return (
-            <div key={field.id} className="flex items-center gap-2">
+            <div key={field.id} className="flex items-start gap-2">
 
               <input
                 type="checkbox"
                 name={field.id}
                 onChange={handleChange}
+                className="mt-1"
               />
 
-              <label className="font-semibold">
+              <label className="font-semibold text-sm sm:text-base break-words">
                 {label}
               </label>
 
@@ -216,7 +222,7 @@ export default function DynamicForm({ fields = [], eventId }) {
       <button
         type="submit"
         disabled={loading}
-        className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition disabled:opacity-50"
+        className="bg-green-600 text-white px-6 py-2.5 rounded hover:bg-green-700 transition disabled:opacity-50 w-full sm:w-auto"
       >
         {loading ? "Submitting..." : "Submit Registration"}
       </button>

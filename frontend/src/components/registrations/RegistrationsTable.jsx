@@ -1,64 +1,68 @@
-import RegistrationRow from "./RegistrationRow"
+import RegistrationRow from "./RegistrationRow";
 
 const RegistrationsTable = ({ registrations, fields, reload, onSelect }) => {
+  if (registrations.length === 0) {
+    return (
+      <div className="text-center text-muted-foreground py-6 text-sm">
+        No registrations yet
+      </div>
+    );
+  }
 
-if(registrations.length===0){
+  return (
 
-return(
+    <div className="overflow-x-auto">
 
-<div className="text-center text-muted-foreground py-6">
-No registrations yet
-</div>
+      <table className="min-w-[700px] w-full text-sm">
 
-)
+        <thead className="border-b border-border text-muted-foreground">
 
-}
+          <tr>
 
-return(
+            <th className="text-left py-3 px-2 whitespace-nowrap">
+              ID
+            </th>
 
-<table className="w-full text-sm">
+            {fields.map((field) => (
+              <th
+                key={field.id}
+                className="text-left px-2 whitespace-nowrap"
+              >
+                {field.label}
+              </th>
+            ))}
 
-<thead className="border-b border-border">
+            <th className="text-left px-2 whitespace-nowrap">
+              Status
+            </th>
 
-<tr>
+            <th className="text-left px-2 whitespace-nowrap">
+              Action
+            </th>
 
-<th>ID</th>
+          </tr>
 
-{fields.map(field=>(
+        </thead>
 
-<th key={field.id}>
-{field.label}
-</th>
+        <tbody>
 
-))}
+          {registrations.map((reg) => (
+            <RegistrationRow
+              key={reg.id}
+              reg={reg}
+              fields={fields}
+              reload={reload}
+              onSelect={onSelect}
+            />
+          ))}
 
-<th>Status</th>
-<th>Action</th>
+        </tbody>
 
-</tr>
+      </table>
 
-</thead>
+    </div>
 
-<tbody>
+  );
+};
 
-{registrations.map(reg=>(
-
-<RegistrationRow
-key={reg.id}
-reg={reg}
-fields={fields}
-reload={reload}
-onSelect={onSelect}
-/>
-
-))}
-
-</tbody>
-
-</table>
-
-)
-
-}
-
-export default RegistrationsTable
+export default RegistrationsTable;

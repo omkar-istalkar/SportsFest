@@ -41,13 +41,13 @@ const RegistrationTrendChart = () => {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.7 }}
-      className="glass-card p-6"
+      className="glass-card p-4 sm:p-6"
     >
 
       {/* TITLE */}
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-4 sm:mb-5">
 
-        <h3 className="text-lg font-semibold text-foreground">
+        <h3 className="text-base sm:text-lg font-semibold text-foreground">
           Registration Trend
         </h3>
 
@@ -57,8 +57,8 @@ const RegistrationTrendChart = () => {
 
       </div>
 
-
-      <div className="w-full h-56">
+      {/* RESPONSIVE CHART HEIGHT */}
+      <div className="w-full h-48 sm:h-56 md:h-60">
 
         <ResponsiveContainer width="100%" height="100%">
 
@@ -71,13 +71,14 @@ const RegistrationTrendChart = () => {
 
             <XAxis
               dataKey="date"
-              tick={{ fill: "#9ca3af", fontSize: 12 }}
+              tick={{ fill: "#9ca3af", fontSize: 10 }}
               axisLine={false}
               tickLine={false}
+              interval="preserveStartEnd"
             />
 
             <YAxis
-              tick={{ fill: "#9ca3af", fontSize: 12 }}
+              tick={{ fill: "#9ca3af", fontSize: 10 }}
               axisLine={false}
               tickLine={false}
             />
@@ -96,8 +97,8 @@ const RegistrationTrendChart = () => {
               dataKey="registrations"
               stroke="#38bdf8"
               strokeWidth={3}
-              dot={{ r: 4 }}
-              activeDot={{ r: 6 }}
+              dot={{ r: 3 }}
+              activeDot={{ r: 5 }}
             />
 
           </LineChart>
@@ -109,6 +110,7 @@ const RegistrationTrendChart = () => {
     </motion.div>
 
   );
+
 };
 
 export default RegistrationTrendChart;

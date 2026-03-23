@@ -32,31 +32,26 @@ if(modalRef.current && !modalRef.current.contains(e.target)){
 close()
 }
 }
-const approveReg = async(id)=>{
 
+const approveReg = async(id)=>{
 await fetch(`http://localhost:8080/api/registrations/approve/${id}`,{
 method:"POST", credentials : "include"
-},)
-
+})
 loadData()
-
 }
 
 const rejectReg = async(id)=>{
-
 await fetch(`http://localhost:8080/api/registrations/reject/${id}`,{
 method:"POST", credentials : "include"
 })
-
 loadData()
-
 }
 
 return(
 
 <motion.div
 onMouseDown={handleOutside}
-className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md"
+className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-3 sm:p-4"
 initial={{opacity:0}}
 animate={{opacity:1}}
 >
@@ -68,8 +63,8 @@ initial={{scale:0.9,y:20,opacity:0}}
 animate={{scale:1,y:0,opacity:1}}
 transition={{duration:0.25}}
 className="
-w-[950px]
-max-h-[85vh]
+w-full max-w-6xl
+max-h-[90vh]
 overflow-y-auto
 rounded-2xl
 border border-border
@@ -83,9 +78,9 @@ to-[#0f172a]
 
 {/* HEADER */}
 
-<div className="flex justify-between items-center px-6 py-4 border-b border-border">
+<div className="flex flex-wrap justify-between items-center gap-2 px-4 sm:px-6 py-3 sm:py-4 border-b border-border">
 
-<h2 className="text-lg font-semibold">
+<h2 className="text-base sm:text-lg font-semibold truncate">
 Registrations — {event.name}
 </h2>
 
@@ -95,23 +90,23 @@ Registrations — {event.name}
 
 </div>
 
-<div className="p-6">
+<div className="p-4 sm:p-6">
 
 {/* EMPTY STATE */}
 
 {registrations.length===0 && (
-
-<div className="text-center text-muted-foreground py-6">
+<div className="text-center text-muted-foreground py-6 text-sm">
 No registrations yet
 </div>
-
 )}
 
 {/* TABLE */}
 
 {registrations.length>0 && (
 
-<table className="w-full text-sm">
+<div className="overflow-x-auto">
+
+<table className="min-w-[800px] w-full text-sm">
 
 <thead className="border-b border-border/40 text-muted-foreground">
 
@@ -119,14 +114,10 @@ No registrations yet
 
 <th className="py-3 text-left">ID</th>
 
-{/* Dynamic Headers */}
-
 {fields.map(field=>(
-
-<th key={field.id} className="text-left">
+<th key={field.id} className="text-left whitespace-nowrap">
 {field.label}
 </th>
-
 ))}
 
 <th>Status</th>
@@ -141,8 +132,8 @@ No registrations yet
 {registrations.map((reg,i)=>{
 
 const data = reg.dynamicData
-  ? JSON.parse(reg.dynamicData)
-  : {}
+? JSON.parse(reg.dynamicData)
+: {}
 
 return(
 
@@ -154,19 +145,17 @@ transition={{delay:i*0.05}}
 className="border-b border-border/40 hover:bg-yellow-500/5"
 >
 
-<td className="py-4">{reg.registrationId}</td>
-
-{/* Dynamic Fields */}
-
-{fields.map(field=>(
-
-<td key={field.id}>
-{data[field.id] || "-"}
+<td className="py-3 sm:py-4 whitespace-nowrap">
+{reg.registrationId}
 </td>
 
+{fields.map(field=>(
+<td key={field.id} className="max-w-[150px] truncate">
+{data[field.id] || "-"}
+</td>
 ))}
 
-<td>
+<td className="whitespace-nowrap">
 
 <span className={`
 px-3 py-1 text-xs rounded-full
@@ -183,17 +172,17 @@ ${reg.status==="PENDING" && "bg-yellow-500/20 text-yellow-400"}
 
 {reg.status === "PENDING" && (
 
-<div className="flex gap-2">
+<div className="flex flex-wrap gap-2">
 
 <button
-className="px-3 py-1 rounded-md bg-green-500/20 text-green-400"
+className="px-2 sm:px-3 py-1 rounded-md bg-green-500/20 text-green-400 text-xs sm:text-sm"
 onClick={()=>approveReg(reg.id)}
 >
 Approve
 </button>
 
 <button
-className="px-3 py-1 rounded-md bg-red-500/20 text-red-400"
+className="px-2 sm:px-3 py-1 rounded-md bg-red-500/20 text-red-400 text-xs sm:text-sm"
 onClick={()=>rejectReg(reg.id)}
 >
 Reject
@@ -202,6 +191,7 @@ Reject
 </div>
 
 )}
+
 </td>
 
 </motion.tr>
@@ -213,14 +203,16 @@ Reject
 
 </table>
 
+</div>
+
 )}
 
 {/* FOOTER */}
 
-<div className="flex justify-end mt-6">
+<div className="flex justify-end mt-4 sm:mt-6">
 
 <button
-className="px-4 py-2 rounded-lg bg-gray-600 text-white hover:bg-gray-500"
+className="px-4 py-2 rounded-lg bg-gray-600 text-white hover:bg-gray-500 transition w-full sm:w-auto"
 onClick={close}
 >
 Back

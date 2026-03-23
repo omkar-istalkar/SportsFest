@@ -52,13 +52,13 @@ const EventTypeChart = () => {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.6 }}
-      className="glass-card p-6"
+      className="glass-card p-4 sm:p-6"
     >
 
       {/* HEADER */}
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex items-center justify-between mb-4 sm:mb-5">
 
-        <h3 className="text-lg font-semibold text-foreground">
+        <h3 className="text-base sm:text-lg font-semibold text-foreground">
           Event Types
         </h3>
 
@@ -68,11 +68,11 @@ const EventTypeChart = () => {
 
       </div>
 
-
-      <div className="grid grid-cols-2 gap-6 items-center">
+      {/* RESPONSIVE GRID */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
 
         {/* LEFT ANALYTICS */}
-        <div className="space-y-6">
+        <div className="space-y-5 sm:space-y-6">
 
           {data.map((item, index) => (
 
@@ -88,7 +88,7 @@ const EventTypeChart = () => {
                     style={{ backgroundColor: COLORS[index] }}
                   ></span>
 
-                  <span className="text-sm text-muted-foreground ">
+                  <span className="text-sm text-muted-foreground">
                     {item.name}
                   </span>
 
@@ -130,48 +130,51 @@ const EventTypeChart = () => {
 
         </div>
 
-
         {/* PIE CHART */}
-        <div className="w-44 h-44 justify-self-end">
+        <div className="w-full h-56 sm:h-64 md:h-56 lg:h-64 flex justify-center md:justify-end">
 
-          <ResponsiveContainer width="100%" height="100%">
+          <div className="w-full max-w-[200px] sm:max-w-[240px] md:max-w-[200px] lg:max-w-[240px]">
 
-            <PieChart>
+            <ResponsiveContainer width="100%" height="100%">
 
-              <Tooltip
-                contentStyle={{
-                  background: "#111827",
-                  border: "1px solid #374151",
-                  borderRadius: "8px",
-                  fontSize: "12px"
-                }}
-              />
+              <PieChart>
 
-              <Pie
-                data={data}
-                dataKey="value"
-                innerRadius={50}
-                outerRadius={70}
-                paddingAngle={3}
-                stroke="none"
-                animationDuration={900}
-              >
+                <Tooltip
+                  contentStyle={{
+                    background: "#111827",
+                    border: "1px solid #374151",
+                    borderRadius: "8px",
+                    fontSize: "12px"
+                  }}
+                />
 
-                {data.map((entry, index) => (
+                <Pie
+                  data={data}
+                  dataKey="value"
+                  innerRadius={40}
+                  outerRadius={70}
+                  paddingAngle={3}
+                  stroke="none"
+                  animationDuration={900}
+                >
 
-                  <Cell
-                    key={index}
-                    fill={COLORS[index]}
-                    style={{ cursor: "pointer" }}
-                  />
+                  {data.map((entry, index) => (
 
-                ))}
+                    <Cell
+                      key={index}
+                      fill={COLORS[index]}
+                      style={{ cursor: "pointer" }}
+                    />
 
-              </Pie>
+                  ))}
 
-            </PieChart>
+                </Pie>
 
-          </ResponsiveContainer>
+              </PieChart>
+
+            </ResponsiveContainer>
+
+          </div>
 
         </div>
 

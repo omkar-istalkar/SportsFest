@@ -14,7 +14,7 @@ const EventModal = ({ event, close, reload }) => {
     deadline: null,
     registrationType: "INDIVIDUAL",
     teamSize: 1,
-    active : true
+    active: true
   })
 
   useEffect(() => {
@@ -26,30 +26,30 @@ const EventModal = ({ event, close, reload }) => {
     }
   }, [event])
 
-    const save = async () => {
+  const save = async () => {
 
     try {
 
-        const payload = {
+      const payload = {
         ...form,
         deadline: form.deadline
-            ? form.deadline.toISOString().split("T")[0]
-            : null
-        }
+          ? form.deadline.toISOString().split("T")[0]
+          : null
+      }
 
-        if (event)
+      if (event)
         await updateEvent(event.id, payload)
-        else
+      else
         await createEvent(payload)
 
-        reload()
-        close()
+      reload()
+      close()
 
     } catch (err) {
-        console.error("Event save error:", err)
+      console.error("Event save error:", err)
     }
 
-    }
+  }
 
   // ESC key close
   useEffect(() => {
@@ -71,8 +71,7 @@ const EventModal = ({ event, close, reload }) => {
 
     <motion.div
       onMouseDown={handleOutside}
-      className="fixed inset-0 z-50 flex items-center justify-center
-      bg-black/60 backdrop-blur-md"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-3 sm:p-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
@@ -83,8 +82,10 @@ const EventModal = ({ event, close, reload }) => {
         animate={{ scale: 1, y: 0, opacity: 1 }}
         transition={{ duration: 0.25 }}
         className="
-        w-[480px]
-        p-7
+        w-full max-w-lg
+        max-h-[90vh]
+        overflow-y-auto
+        p-4 sm:p-7
         rounded-2xl
         border border-border
         shadow-2xl
@@ -97,14 +98,12 @@ const EventModal = ({ event, close, reload }) => {
       >
 
         {/* Title */}
-
-        <h2 className="text-lg font-semibold mb-6">
+        <h2 className="text-base sm:text-lg font-semibold mb-4 sm:mb-6">
           {event ? "Edit Event" : "Create Event"}
         </h2>
 
         {/* Event Name */}
-
-        <div className="mb-5">
+        <div className="mb-4 sm:mb-5">
 
           <label className="text-sm text-muted-foreground mb-1 block">
             Event Name
@@ -129,8 +128,7 @@ const EventModal = ({ event, close, reload }) => {
         </div>
 
         {/* Description */}
-
-        <div className="mb-5">
+        <div className="mb-4 sm:mb-5">
 
           <label className="text-sm text-muted-foreground mb-1 block">
             Description
@@ -156,8 +154,7 @@ const EventModal = ({ event, close, reload }) => {
         </div>
 
         {/* Deadline */}
-
-        <div className="mb-5">
+        <div className="mb-4 sm:mb-5">
 
           <label className="text-sm text-muted-foreground mb-1 block">
             Deadline
@@ -183,8 +180,7 @@ const EventModal = ({ event, close, reload }) => {
         </div>
 
         {/* Registration Type */}
-
-        <div className="mb-5">
+        <div className="mb-4 sm:mb-5">
 
           <label className="text-sm text-muted-foreground mb-1 block">
             Registration Type
@@ -216,10 +212,9 @@ const EventModal = ({ event, close, reload }) => {
         </div>
 
         {/* Team Size */}
+        {form.registrationType === "TEAM" && (   // ✅ FIXED BUG
 
-        {form.registrationType === "Team" && (
-
-          <div className="mb-6">
+          <div className="mb-5 sm:mb-6">
 
             <label className="text-sm text-muted-foreground mb-1 block">
               Team Size
@@ -249,8 +244,7 @@ const EventModal = ({ event, close, reload }) => {
         )}
 
         {/* Buttons */}
-
-        <div className="flex justify-end gap-3">
+        <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
 
           <button
             className="
@@ -258,7 +252,7 @@ const EventModal = ({ event, close, reload }) => {
             bg-gray-600/70
             text-white
             hover:bg-gray-500
-            transition
+            transition w-full sm:w-auto
             "
             onClick={close}
           >
@@ -272,7 +266,7 @@ const EventModal = ({ event, close, reload }) => {
             text-white
             hover:bg-blue-500
             hover:scale-[1.02]
-            transition
+            transition w-full sm:w-auto
             "
             onClick={save}
           >

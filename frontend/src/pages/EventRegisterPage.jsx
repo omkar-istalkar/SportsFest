@@ -15,43 +15,39 @@ export default function EventRegisterPage() {
     loadData();
   }, [id]);
 
-const loadData = async () => {
+  const loadData = async () => {
 
-  try {
+    try {
 
-    const eventData = await getEventById(id);
-    const fieldResponse = await getFields(id);
+      const eventData = await getEventById(id);
+      const fieldResponse = await getFields(id);
 
-    console.log("Event:", eventData);
-    console.log("Fields:", fieldResponse);
+      setEvent(eventData);
 
-    setEvent(eventData);
+      if (Array.isArray(fieldResponse.data)) {
+        setFields(fieldResponse.data);
+      } 
+      else if (Array.isArray(fieldResponse.data.data)) {
+        setFields(fieldResponse.data.data);
+      } 
+      else {
+        setFields([]);
+      }
 
-    // Extract fields array correctly
-    if (Array.isArray(fieldResponse.data)) {
-      setFields(fieldResponse.data);
-    } 
-    else if (Array.isArray(fieldResponse.data.data)) {
-      setFields(fieldResponse.data.data);
-    } 
-    else {
-      setFields([]);
+      setLoading(false);
+
+    } catch (error) {
+
+      console.error("Error loading event data:", error);
+      setLoading(false);
+
     }
 
-    setLoading(false);
-
-  } catch (error) {
-
-    console.error("Error loading event data:", error);
-    setLoading(false);
-
-  }
-
-};
+  };
 
   if (loading) {
     return (
-      <div className="p-10 text-center text-white">
+      <div className="min-h-screen flex items-center justify-center text-white text-sm sm:text-base px-4">
         Loading registration form...
       </div>
     );
@@ -59,18 +55,21 @@ const loadData = async () => {
 
   return (
 
-    <div className="min-h-screen bg-slate-900 text-white p-10">
+    <div className="min-h-screen bg-slate-900 text-white px-4 sm:px-6 lg:px-10 py-6 sm:py-10">
 
-      <div className="max-w-2xl mx-auto bg-white text-black p-8 rounded-xl shadow-lg">
+      <div className="max-w-2xl mx-auto bg-white text-black p-4 sm:p-6 lg:p-8 rounded-xl shadow-lg">
 
-        <h2 className="text-2xl font-bold mb-2">
+        {/* Title */}
+        <h2 className="text-xl sm:text-2xl font-bold mb-2 break-words">
           {event?.name}
         </h2>
 
-        <p className="text-gray-600 mb-6">
+        {/* Description */}
+        <p className="text-gray-600 text-sm sm:text-base mb-4 sm:mb-6 break-words">
           {event?.description}
         </p>
 
+        {/* Form */}
         <DynamicForm fields={fields} eventId={id} />
 
       </div>

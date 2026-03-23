@@ -19,7 +19,6 @@ export default function LoginPage() {
     e.preventDefault();
 
     const formData = new URLSearchParams();
-
     formData.append("username", userName);
     formData.append("password", password);
 
@@ -32,7 +31,6 @@ export default function LoginPage() {
       });
 
       const role = res.data.role;
-
       localStorage.setItem("role", role);
 
       if (role === "ROLE_ADMIN") {
@@ -44,48 +42,37 @@ export default function LoginPage() {
 
     }
     catch (err) {
-
       alert(err.response?.data?.message || "Invalid credentials");
-
     }
 
   };
 
   return (
 
-    <div className="min-h-screen flex items-center justify-center bg-[#0f172a] relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-[#0f172a] relative overflow-hidden px-4">
 
       {/* Background Effects */}
-
       <GradientMesh />
       <ParticlesBackground />
       <CursorGlow />
-
-      {/* Orbit animation around card */}
-
       <OrbitIcons />
-
-      {/* Parallax container */}
 
       <ParallaxContainer>
 
-        {/* Floating sports icons */}
-
-        <div className="absolute top-24 left-24 text-white/20 text-5xl animate-bounce">
+        {/* Floating icons (hidden on small screens) */}
+        <div className="hidden sm:block absolute top-24 left-24 text-white/20 text-4xl lg:text-5xl animate-bounce">
           ⚽
         </div>
 
-        <div className="absolute bottom-24 right-32 text-white/20 text-5xl animate-pulse">
+        <div className="hidden sm:block absolute bottom-24 right-32 text-white/20 text-4xl lg:text-5xl animate-pulse">
           🏀
         </div>
 
-        <div className="absolute top-40 right-20 text-white/20 text-5xl animate-bounce">
+        <div className="hidden sm:block absolute top-40 right-20 text-white/20 text-4xl lg:text-5xl animate-bounce">
           🏆
         </div>
 
-
         {/* Login Card */}
-
         <motion.div
 
           initial={{ opacity: 0, scale: 0.9, y: 40 }}
@@ -100,8 +87,8 @@ export default function LoginPage() {
 
           className="
           glass-card
-          p-10
-          w-[380px]
+          w-full max-w-sm
+          p-6 sm:p-8 lg:p-10
           text-white
           relative
           z-10
@@ -110,19 +97,16 @@ export default function LoginPage() {
         >
 
           {/* Title */}
-
-          <h2 className="text-3xl font-bold text-center mb-6 neon-text">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-5 sm:mb-6 neon-text">
             🏆 SportsFest
           </h2>
 
-          <p className="text-center text-sm text-muted-foreground mb-6">
+          <p className="text-center text-xs sm:text-sm text-muted-foreground mb-5 sm:mb-6">
             Sign in to manage your events
           </p>
 
-
           {/* Form */}
-
-          <form onSubmit={login} className="space-y-4">
+          <form onSubmit={login} className="space-y-3 sm:space-y-4">
 
             <input
               className="search-input w-full"
@@ -146,11 +130,12 @@ export default function LoginPage() {
 
               className="
               w-full
-              py-2
+              py-2.5
               rounded-lg
               bg-gradient-to-r
               from-blue-500
               to-purple-600
+              text-sm sm:text-base
               font-semibold
               shadow-lg
               hover:shadow-purple-500/40
@@ -158,15 +143,12 @@ export default function LoginPage() {
               "
             >
               Login
-
             </motion.button>
 
           </form>
 
-
           {/* Register link */}
-
-          <div className="mt-6 text-center text-sm text-muted-foreground">
+          <div className="mt-5 sm:mt-6 text-center text-xs sm:text-sm text-muted-foreground">
 
             Don't have an account?
 
