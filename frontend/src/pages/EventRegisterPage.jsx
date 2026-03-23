@@ -57,7 +57,8 @@ export default function EventRegisterPage() {
 
     <div className="min-h-screen bg-slate-900 text-white px-4 sm:px-6 lg:px-10 py-6 sm:py-10">
 
-      <div className="max-w-2xl mx-auto bg-white text-black p-4 sm:p-6 lg:p-8 rounded-xl shadow-lg">
+      <div style={{borderRadius: 50}}>
+        
 
         {/* Title */}
         <h2 className="text-xl sm:text-2xl font-bold mb-2 break-words">

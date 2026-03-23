@@ -1,234 +1,301 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 export default function DynamicForm({ fields = [], eventId }) {
 
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
+  const [events, setEvents] = useState([]);
+
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
+  /* ================= FETCH ALL EVENTS ================= */
 
+useEffect(() => {
+  loadEvents();
+}, []);
+
+
+const loadEvents = async () => {
+  try {
+    const res = await axios.get("http://localhost:8080/api/events", {withCredentials:true});
+
+    console.log("FULL RESPONSE:", res);
+
+    // ✅ DIRECTLY SET ARRAY (your API already returns array)
+    setEvents(res.data);
+
+  } catch (error) {
+    console.error("Error loading events", error);
+  }
+};
+
+  /* ================= GET SELECTED EVENT ================= */
+
+const selectedEvent =
+  events.length > 0
+    ? events.find((e) => e.id === Number(eventId))
+    : null;
+    console.log("EVENTS:", events);
+console.log("EVENT ID:", eventId);
+  /* ================= FORM HANDLING ================= */
+
+  const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: type === "checkbox" ? checked : value
-    });
-
+    }));
   };
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
 
     const data = new FormData();
     data.append("eventId", eventId);
 
-    Object.keys(formData).forEach((key)=>{
+    Object.keys(formData).forEach((key) => {
       data.append(key, formData[key]);
     });
 
-    try{
-
+    try {
       setLoading(true);
 
       const res = await axios.post(
         "http://localhost:8080/api/registrations/submit-registration",
-        data,{withCredentials:true}
+        data,
+        { withCredentials: true }
       );
 
-      const regId =
-        res.data.id ||
-        res.data.registrationId ||
-        res.data.data?.id;
+      const regId = res.data?.registrationId;
 
       if (!regId) {
-        alert("Registration completed but ID not returned from server.");
+        alert("Registration completed but ID not returned");
         return;
       }
 
       navigate(`/registration-success/${regId}`);
 
-    }catch(error){
-
+    } catch (error) {
       console.error("Registration error:", error);
       alert("Registration failed");
-
-    }finally{
-
+    } finally {
       setLoading(false);
-
     }
-
   };
 
-  return (
+  /* ================= UI ================= */
 
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-4 sm:space-y-5 w-full max-w-2xl mx-auto"
+return (
+  <div className="min-h-screen bg-gradient-to-br from-[#020617] via-[#020617] to-[#0f172a] flex items-center justify-center px-4 py-10">
+
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95, y: 40 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="
+      w-full max-w-2xl
+      p-6 sm:p-8
+      rounded-2xl
+      border border-border
+      bg-white/5
+      backdrop-blur-xl
+      shadow-2xl
+      "
     >
 
-      {fields.map((field) => {
+      {/* EVENT DETAILS */}
+      {selectedEvent ? (
+        <div className="mb-8 text-center">
 
-        const label = field.label || field.fieldLabel;
-        const type = (field.type || field.fieldType || "").toUpperCase();
-        const options = (field.options || "").split(",");
+          <h1 className="text-3xl font-bold text-white mb-2">
+            {selectedEvent.name}
+          </h1>
 
-        /* TEXT + NUMBER */
+          <p className="text-gray-400 text-sm sm:text-base mb-2">
+            {selectedEvent.description}
+          </p>
 
-        if (type === "TEXT" || type === "NUMBER") {
+          <span className="inline-block px-4 py-1 text-xs rounded-full bg-red-500/20 text-red-400">
+            Deadline: {selectedEvent.deadline}
+          </span>
 
-          return (
-            <div key={field.id}>
+        </div>
+      ) : (
+        <p className="text-center text-gray-400 mb-6">
+          Loading event details...
+        </p>
+      )}
 
-              <label className="block mb-1 font-semibold text-sm sm:text-base break-words">
-                {label} {field.required && "*"}
-              </label>
+      {/* FORM */}
+      <form onSubmit={handleSubmit} className="space-y-6">
 
-              <input
-                type={type === "NUMBER" ? "number" : "text"}
-                name={field.id}
-                required={field.required}
-                onChange={handleChange}
-                className="border p-2.5 w-full rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
+        {fields.map((field) => {
 
-            </div>
-          );
+          const label = field.label || field.fieldLabel;
+          const type = (field.type || field.fieldType || "").toUpperCase();
+          const options = field.options ? field.options.split(",") : [];
 
-        }
+          /* TEXT + NUMBER */
+          if (type === "TEXT" || type === "NUMBER") {
+            return (
+              <div key={field.id}>
+                <label className="block mb-2 text-sm font-medium text-gray-300">
+                  {label} {field.required && "*"}
+                </label>
 
-        /* RADIO */
-
-        if (type === "RADIO") {
-
-          return (
-            <div key={field.id}>
-
-              <label className="block mb-2 font-semibold text-sm sm:text-base break-words">
-                {label} {field.required && "*"}
-              </label>
-
-              <div className="flex flex-col gap-2">
-
-                {options.map((opt, index) => (
-
-                  <label key={index} className="flex items-center gap-2 text-sm sm:text-base">
-
-                    <input
-                      type="radio"
-                      name={field.id}
-                      value={opt}
-                      onChange={handleChange}
-                    />
-
-                    {opt}
-
-                  </label>
-
-                ))}
-
+                <input
+                  type={type === "NUMBER" ? "number" : "text"}
+                  name={field.id}
+                  required={field.required}
+                  onChange={handleChange}
+                  className="
+                  w-full px-3 py-2 rounded-lg
+                  bg-white/10
+                  border border-white/10
+                  text-white
+                  placeholder-gray-400
+                  focus:outline-none
+                  focus:ring-2 focus:ring-blue-500
+                  transition
+                  "
+                />
               </div>
+            );
+          }
 
-            </div>
-          );
+          /* RADIO */
+          if (type === "RADIO") {
+            return (
+              <div key={field.id}>
+                <label className="block mb-2 text-sm font-medium text-gray-300">
+                  {label} {field.required && "*"}
+                </label>
 
-        }
+                <div className="flex flex-col gap-2">
+                  {options.map((opt, index) => (
+                    <label key={index} className="flex items-center gap-2 text-gray-300">
+                      <input
+                        type="radio"
+                        name={field.id}
+                        value={opt}
+                        required={field.required}
+                        onChange={handleChange}
+                        className="accent-blue-500"
+                      />
+                      {opt}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            );
+          }
 
-        /* DROPDOWN */
+          /* DROPDOWN */
+          if (type === "SELECT" || type === "DROPDOWN") {
+            return (
+              <div key={field.id}>
+                <label className="block mb-2 text-sm font-medium text-gray-300">
+                  {label}
+                </label>
 
-        if (type === "SELECT" || type === "DROPDOWN") {
+                <select
+                  name={field.id}
+                  required={field.required}
+                  onChange={handleChange}
+                  className="
+                  w-full px-3 py-2 rounded-lg
+                  bg-white/10
+                  border border-white/10
+                  text-white
+                  focus:outline-none
+                  focus:ring-2 focus:ring-blue-500
+                  "
+                >
+                  <option value="">Select</option>
 
-          return (
-            <div key={field.id}>
+                  {options.map((opt, index) => (
+                    <option key={index} value={opt}>
+                      {opt}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            );
+          }
 
-              <label className="block mb-1 font-semibold text-sm sm:text-base break-words">
+          /* TEXTAREA */
+          if (type === "TEXTAREA") {
+            return (
+              <div key={field.id}>
+                <label className="block mb-2 text-sm font-medium text-gray-300">
+                  {label}
+                </label>
+
+                <textarea
+                  name={field.id}
+                  required={field.required}
+                  onChange={handleChange}
+                  className="
+                  w-full px-3 py-2 rounded-lg
+                  bg-white/10
+                  border border-white/10
+                  text-white
+                  focus:outline-none
+                  focus:ring-2 focus:ring-blue-500
+                  "
+                />
+              </div>
+            );
+          }
+
+          /* CHECKBOX */
+          if (type === "CHECKBOX") {
+            return (
+              <div key={field.id} className="flex items-center gap-2 text-gray-300">
+                <input
+                  type="checkbox"
+                  name={field.id}
+                  onChange={handleChange}
+                  className="accent-blue-500"
+                />
                 {label}
-              </label>
+              </div>
+            );
+          }
 
-              <select
-                name={field.id}
-                onChange={handleChange}
-                className="border p-2.5 w-full rounded"
-              >
+          return null;
+        })}
 
-                <option value="">Select</option>
+        {/* BUTTON */}
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          type="submit"
+          disabled={loading}
+          className="
+          w-full
+          py-3
+          rounded-lg
+          font-semibold
+          bg-gradient-to-r from-green-500 to-emerald-600
+          text-white
+          shadow-lg
+          hover:shadow-green-500/40
+          transition
+          disabled:opacity-50
+          "
+        >
+          {loading ? "Submitting..." : "Submit Registration"}
+        </motion.button>
 
-                {options.map((opt, index) => (
-                  <option key={index} value={opt}>
-                    {opt}
-                  </option>
-                ))}
+      </form>
 
-              </select>
+    </motion.div>
 
-            </div>
-          );
-
-        }
-
-        /* TEXTAREA */
-
-        if (type === "TEXTAREA") {
-
-          return (
-            <div key={field.id}>
-
-              <label className="block mb-1 font-semibold text-sm sm:text-base break-words">
-                {label}
-              </label>
-
-              <textarea
-                name={field.id}
-                onChange={handleChange}
-                className="border p-2.5 w-full rounded"
-              />
-
-            </div>
-          );
-
-        }
-
-        /* CHECKBOX */
-
-        if (type === "CHECKBOX") {
-
-          return (
-            <div key={field.id} className="flex items-start gap-2">
-
-              <input
-                type="checkbox"
-                name={field.id}
-                onChange={handleChange}
-                className="mt-1"
-              />
-
-              <label className="font-semibold text-sm sm:text-base break-words">
-                {label}
-              </label>
-
-            </div>
-          );
-
-        }
-
-        return null;
-
-      })}
-
-      <button
-        type="submit"
-        disabled={loading}
-        className="bg-green-600 text-white px-6 py-2.5 rounded hover:bg-green-700 transition disabled:opacity-50 w-full sm:w-auto"
-      >
-        {loading ? "Submitting..." : "Submit Registration"}
-      </button>
-
-    </form>
-
-  );
-
+  </div>
+);
 }
