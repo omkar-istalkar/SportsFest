@@ -32,13 +32,15 @@ const AddFieldModal = ({ event, close, reload }) => {
 
   return (
     <motion.div
-      className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-3 sm:p-4"
+      className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-[60] p-3 sm:p-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      onClick={close} // click outside to close
-    >
+      onClick={close}
+      onMouseDown={(e)=>e.stopPropagation()}   // ✅ FIX
+      >
       <motion.div
         onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e)=>e.stopPropagation()}  
         initial={{ scale: 0.9, y: 20, opacity: 0 }}
         animate={{ scale: 1, y: 0, opacity: 1 }}
         transition={{ duration: 0.25 }}
