@@ -107,6 +107,7 @@ focus:ring-1 focus:ring-blue-500
             <option value="number">Number</option>
             <option value="dropdown">Dropdown</option>
             <option value="radio">Radio</option>
+            <option value="file">File Upload </option>
           </select>
         </div>
 
@@ -131,6 +132,13 @@ focus:ring-1 focus:ring-blue-500
 "
               placeholder="Option1,Option2,Option3"
             />
+          </div>
+        )}
+
+        {/* File Info */}
+        {form.fieldType === "file" && (
+          <div className="mb-4 text-xs text-blue-400 bg-blue-500/10 p-2 rounded">
+            Allowed: JPG, PNG, PDF, DOCX, TXT (Max 5MB)
           </div>
         )}
 

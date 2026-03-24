@@ -4,6 +4,9 @@ import axios from "axios";
 import Sidebar from "../components/dashboard/Sidebar";
 import Header from "../components/dashboard/Header";
 import { X } from "lucide-react";
+import { renderValue } from "../lib/renderValue.jsx";
+import FilePreviewModal from "../components/FilePreviewModal";
+import useFilePreview from "../hooks/useFilePreview.jsx";
 
 const API = "http://localhost:8080/api";
 
@@ -12,6 +15,10 @@ const Registrations = () => {
   const [fields, setFields] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(null);
+
+  // ✅ HOOK (correct usage)
+  const { previewUrl, previewType, previewFile, closePreview } =
+    useFilePreview();
 
   const loadData = async () => {
     try {
@@ -35,7 +42,7 @@ const Registrations = () => {
     await axios.post(
       `${API}/registrations/approve/${id}`,
       {},
-      { withCredentials: true },
+      { withCredentials: true }
     );
     loadData();
   };
@@ -44,7 +51,7 @@ const Registrations = () => {
     await axios.post(
       `${API}/registrations/reject/${id}`,
       {},
-      { withCredentials: true },
+      { withCredentials: true }
     );
     loadData();
   };
@@ -60,7 +67,7 @@ const Registrations = () => {
         setFields(
           Array.isArray(resFields.data)
             ? resFields.data
-            : resFields.data.data || [],
+            : resFields.data.data || []
         );
       }
     } catch (err) {
@@ -163,7 +170,6 @@ ${reg.status === "PENDING" && "bg-yellow-500/20 text-yellow-400"}
       </div>
 
       {/* DETAILS MODAL */}
-
       {selected && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-3">
           <motion.div
@@ -225,14 +231,21 @@ to-[#0f172a]
                             {field.label}
                           </td>
 
-                          <td className="px-3 py-2 break-words">
-                            {data[field.id] || "-"}
+                          <td>
+                            {renderValue(data[field.id], previewFile)}
                           </td>
                         </tr>
                       );
                     })}
                   </tbody>
                 </table>
+
+                {/* ✅ PREVIEW MODAL (kept as you wrote, just correctly placed) */}
+                <FilePreviewModal
+                  url={previewUrl}
+                  type={previewType}
+                  onClose={closePreview}
+                />
               </div>
             </div>
           </motion.div>

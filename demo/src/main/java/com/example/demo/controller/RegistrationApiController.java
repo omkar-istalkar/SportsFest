@@ -18,6 +18,10 @@ import com.example.demo.service.RegistrationService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.springframework.web.multipart.MultipartFile;
+import com.example.demo.entity.UploadedFile;
+import com.example.demo.repository.UploadedFileRepository;
+
 @RestController
 @RequestMapping("/api/registrations")
 @CrossOrigin(origins = "http://localhost:5173")
@@ -27,10 +31,13 @@ public class RegistrationApiController {
     private RegistrationService registrationService;
 
     @Autowired
-private EventRepository eventRepository;
+    private EventRepository eventRepository;
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UploadedFileRepository uploadedFileRepository;
 
     @GetMapping
     public List<Registration> getAllRegistrations() {
@@ -51,42 +58,93 @@ private EventRepository eventRepository;
         registrationService.rejectRegistration(id);
     }
 
-@PostMapping("/submit-registration")
-public Map<String, Object> submitRegistration(
-        @RequestParam Long eventId,
-        @RequestParam Map<String, String> formData,
-        Registration registration,
-        Authentication authentication) {
+    @PostMapping("/submit-registration")
+    public Map<String, Object> submitRegistration(
+            @RequestParam Long eventId,
+            @RequestParam String data,
+            @RequestParam(required = false) List<MultipartFile> files,
+            @RequestParam(required = false) List<Long> fileFieldIds,
+            Authentication authentication
+    ) {
 
-    // 1️⃣ Get logged user email
-    String email = authentication.getName();
+        Map<String, Object> response = new HashMap<>();
 
-    // 2️⃣ Fetch user
-    User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+        try {
 
-    // 3️⃣ Fetch event
-    Event event = eventRepository.findById(eventId)
-            .orElseThrow(() -> new RuntimeException("Event not found"));
+            // 1️⃣ Get logged user
+            String email = authentication.getName();
 
-    registration.setUser(user);        
-    registration.setEvent(event);
-    registration.setStatus(RegistrationStatus.PENDING);
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
 
-    formData.remove("eventId");
+            // 2️⃣ Get event
+            Event event = eventRepository.findById(eventId)
+                    .orElseThrow(() -> new RuntimeException("Event not found"));
 
-    try {
-        ObjectMapper mapper = new ObjectMapper();
-        registration.setDynamicData(mapper.writeValueAsString(formData));
-    } catch (JsonProcessingException e) {
-        throw new RuntimeException("JSON conversion error", e);
+            // 3️⃣ Convert JSON → Map
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> dataMap = mapper.readValue(data, Map.class);
+
+            // 4️⃣ Create registration
+            Registration registration = new Registration();
+            registration.setUser(user);
+            registration.setEvent(event);
+            registration.setStatus(RegistrationStatus.PENDING);
+            registration.setDynamicData(data);
+
+            Registration saved = registrationService.saveRegistration(registration);
+
+            // 5️⃣ Handle file upload
+            if (files != null && fileFieldIds != null) {
+
+                for (int i = 0; i < files.size(); i++) {
+
+                    MultipartFile file = files.get(i);
+                    Long fieldId = fileFieldIds.get(i);
+
+                    if (!isValidType(file.getContentType())) {
+                        throw new RuntimeException("Invalid file type");
+                    }
+
+                    UploadedFile upload = new UploadedFile();
+                    upload.setRegistrationId(saved.getRegistrationId());
+                    upload.setFieldId(fieldId);
+                    upload.setFileName(file.getOriginalFilename());
+                    upload.setFileType(file.getContentType());
+                    upload.setData(file.getBytes());
+
+                    UploadedFile savedFile = uploadedFileRepository.save(upload);
+
+                    // 🔥 UPDATE JSON
+                    Map<String, Object> fileObj = new HashMap<>();
+                    fileObj.put("type", "file");
+                    fileObj.put("fileId", savedFile.getId());
+
+                    dataMap.put(String.valueOf(fieldId), fileObj);
+                }
+            }
+
+            // 6️⃣ Save updated JSON
+            saved.setDynamicData(mapper.writeValueAsString(dataMap));
+            registrationService.saveRegistration(saved);
+
+            // 7️⃣ Response
+            response.put("registrationId", saved.getRegistrationId());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("error", "Submission failed");
+        }
+
+        return response;
     }
 
-    Registration saved = registrationService.saveRegistration(registration);
+    private boolean isValidType(String type) {
+    return type.equals("image/jpeg") ||
+           type.equals("image/png") ||
+           type.equals("application/pdf") ||
+           type.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document") ||
+           type.equals("text/plain");
+}
 
-    Map<String, Object> response = new HashMap<>();
-    response.put("registrationId", saved.getRegistrationId());
-
-    return response;
-    }
 }

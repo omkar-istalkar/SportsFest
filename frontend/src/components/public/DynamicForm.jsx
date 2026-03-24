@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 export default function DynamicForm({ fields = [], eventId }) {
 
   const [formData, setFormData] = useState({});
+  const [files, setFiles] = useState({});
   const [loading, setLoading] = useState(false);
   const [events, setEvents] = useState([]);
 
@@ -51,14 +52,27 @@ console.log("EVENT ID:", eventId);
     }));
   };
 
+  const handleFileChange = (fieldId, file) => {
+    setFiles((prev) => ({
+      ...prev,
+      [fieldId]: file
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const data = new FormData();
+
     data.append("eventId", eventId);
 
-    Object.keys(formData).forEach((key) => {
-      data.append(key, formData[key]);
+    // ✅ Send JSON data
+    data.append("data", JSON.stringify(formData));
+
+    // ✅ Send files
+    Object.keys(files).forEach((fieldId) => {
+      data.append("files", files[fieldId]);
+      data.append("fileFieldIds", fieldId);
     });
 
     try {
@@ -85,7 +99,7 @@ console.log("EVENT ID:", eventId);
     } finally {
       setLoading(false);
     }
-  };
+};
 
   /* ================= UI ================= */
 
@@ -227,18 +241,22 @@ return (
             );
           }
 
-          /* TEXTAREA */
-          if (type === "TEXTAREA") {
+          /* FILE UPLOAD */
+          if (type === "FILE") {
             return (
               <div key={field.id}>
                 <label className="block mb-2 text-sm font-medium text-gray-300">
-                  {label}
+                  {label} {field.required && "*"}
                 </label>
 
-                <textarea
+                <input
+                  type="file"
                   name={field.id}
                   required={field.required}
-                  onChange={handleChange}
+                  accept=".jpg,.jpeg,.png,.pdf,.docx,.txt"
+                  onChange={(e) =>
+                    handleFileChange(field.id, e.target.files[0])
+                  }
                   className="
                   w-full px-3 py-2 rounded-lg
                   bg-white/10
@@ -248,6 +266,10 @@ return (
                   focus:ring-2 focus:ring-blue-500
                   "
                 />
+
+                <p className="text-xs text-gray-400 mt-1">
+                  Allowed: JPG, PNG, PDF, DOCX, TXT
+                </p>
               </div>
             );
           }

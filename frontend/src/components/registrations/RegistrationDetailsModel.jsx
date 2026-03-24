@@ -1,23 +1,75 @@
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
+import { useState } from "react";
 
 const RegistrationDetailsModal = ({ registration, fields, close }) => {
   const data = registration.dynamicData
     ? JSON.parse(registration.dynamicData)
     : {};
 
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [previewType, setPreviewType] = useState(null);
+
+  // ✅ FETCH FILE FOR PREVIEW
+  const previewFile = async (fileId) => {
+    try {
+      const res = await fetch(`http://localhost:8080/api/files/${fileId}`);
+
+      if (!res.ok) throw new Error("Failed to fetch file");
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+
+      setPreviewUrl(url);
+      setPreviewType(blob.type); // important
+    } catch (err) {
+      console.error(err);
+      alert("Failed to preview file");
+    }
+  };
+
+  // ✅ CLOSE PREVIEW
+  const closePreview = () => {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(null);
+    setPreviewType(null);
+  };
+
+  // ✅ HANDLE VALUE (FIX + PREVIEW)
+  const renderValue = (value) => {
+    if (!value) return "-";
+
+    if (typeof value === "object") {
+      if (value.fileId) {
+        return (
+          <button
+            onClick={() => previewFile(value.fileId)}
+            className="text-blue-400 hover:text-blue-300 underline"
+          >
+            👁 View File
+          </button>
+        );
+      }
+      return JSON.stringify(value);
+    }
+
+    return value;
+  };
+
   return (
-    <motion.div
-      className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-3 sm:p-4"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      onClick={close}
-    >
+    <>
+      {/* MAIN MODAL */}
       <motion.div
-        onClick={(e) => e.stopPropagation()}
-        initial={{ scale: 0.9, y: 20 }}
-        animate={{ scale: 1, y: 0 }}
-        className="
+        className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-3 sm:p-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        onClick={close}
+      >
+        <motion.div
+          onClick={(e) => e.stopPropagation()}
+          initial={{ scale: 0.9, y: 20 }}
+          animate={{ scale: 1, y: 0 }}
+          className="
 w-full max-w-2xl
 max-h-[90vh]
 overflow-y-auto
@@ -29,73 +81,125 @@ from-[#020617]
 via-[#020617]
 to-[#0f172a]
 "
-      >
-        {/* HEADER */}
+        >
+          {/* HEADER */}
+          <div className="flex justify-between items-center px-4 sm:px-6 py-4 border-b border-border">
+            <h2 className="text-lg font-semibold">
+              Registration Details
+            </h2>
 
-        <div className="flex flex-wrap justify-between items-center gap-2 px-4 sm:px-6 py-3 sm:py-4 border-b border-border">
-          <h2 className="text-base sm:text-lg font-semibold truncate">
-            Registration Details
-          </h2>
-
-          <button onClick={close}>
-            <X size={20} />
-          </button>
-        </div>
-
-        <div className="p-4 sm:p-6">
-          <div className="space-y-2 mb-5 sm:mb-6 text-sm sm:text-base">
-            <p className="break-words">
-              <span className="font-semibold">Registration ID:</span> SF-
-              {registration.id}
-            </p>
-
-            <p>
-              <span className="font-semibold">Status:</span>{" "}
-              <span
-                className={`
-px-2 py-1 text-xs rounded-full
-${registration.status === "APPROVED" && "bg-green-500/20 text-green-400"}
-${registration.status === "REJECTED" && "bg-red-500/20 text-red-400"}
-${registration.status === "PENDING" && "bg-yellow-500/20 text-yellow-400"}
-`}
-              >
-                {registration.status}
-              </span>
-            </p>
-
-            <p className="break-words">
-              <span className="font-semibold">Registered At:</span>{" "}
-              {registration.registeredAt}
-            </p>
+            <button onClick={close}>
+              <X size={20} />
+            </button>
           </div>
 
-          <hr className="border-border mb-4" />
+          <div className="p-4 sm:p-6">
+            {/* INFO */}
+            <div className="space-y-2 mb-6">
+              <p>
+                <b>Registration ID:</b> SF-{registration.id}
+              </p>
 
-          <h3 className="font-semibold mb-3 text-sm sm:text-base">
-            Submitted Details
-          </h3>
+              <p>
+                <b>Status:</b>{" "}
+                <span
+                  className={`px-2 py-1 rounded text-xs
+                  ${
+                    registration.status === "APPROVED" &&
+                    "bg-green-500/20 text-green-400"
+                  }
+                  ${
+                    registration.status === "REJECTED" &&
+                    "bg-red-500/20 text-red-400"
+                  }
+                  ${
+                    registration.status === "PENDING" &&
+                    "bg-yellow-500/20 text-yellow-400"
+                  }
+                  `}
+                >
+                  {registration.status}
+                </span>
+              </p>
 
-          {/* TABLE WRAPPER */}
-          <div className="overflow-x-auto">
-            <table className="min-w-[500px] w-full text-sm border border-border">
-              <tbody>
-                {fields.map((field) => (
-                  <tr key={field.id} className="border-b border-border">
-                    <td className="px-3 sm:px-4 py-2 font-medium w-[40%] break-words">
-                      {field.label}
-                    </td>
+              <p>
+                <b>Registered At:</b> {registration.registeredAt}
+              </p>
+            </div>
 
-                    <td className="px-3 sm:px-4 py-2 break-words">
-                      {data[field.id] || "-"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <hr className="mb-4 border-border" />
+
+            <h3 className="font-semibold mb-3">
+              Submitted Details
+            </h3>
+
+            {/* TABLE */}
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm border border-border">
+                <tbody>
+                  {fields.map((field) => (
+                    <tr key={field.id} className="border-b border-border">
+                      <td className="px-4 py-2 font-medium w-[40%]">
+                        {field.label}
+                      </td>
+
+                      <td className="px-4 py-2">
+                        {renderValue(data[field.id])}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+        </motion.div>
       </motion.div>
-    </motion.div>
+
+      {/* ✅ PREVIEW MODAL */}
+      {previewUrl && (
+        <div
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-[60] p-4"
+          onClick={closePreview}
+        >
+          <div
+            className="bg-[#020617] rounded-xl p-3 max-w-4xl w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-end mb-2">
+              <button onClick={closePreview}>
+                <X />
+              </button>
+            </div>
+
+            {/* IMAGE PREVIEW */}
+            {previewType.startsWith("image") && (
+              <img
+                src={previewUrl}
+                alt="preview"
+                className="max-h-[80vh] mx-auto"
+              />
+            )}
+
+            {/* PDF PREVIEW */}
+            {previewType === "application/pdf" && (
+              <iframe
+                src={previewUrl}
+                title="PDF Preview"
+                className="w-full h-[80vh]"
+              />
+            )}
+
+            {/* OTHER FILE */}
+            {!previewType.startsWith("image") &&
+              previewType !== "application/pdf" && (
+                <div className="text-center text-white">
+                  Preview not supported
+                </div>
+              )}
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
