@@ -2,19 +2,13 @@ package com.example.demo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
 public class DemoApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(DemoApplication.class, args);
-		 PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-	        
-	        String rawPassword = "Pass@123";
-	        String encodedPassword = passwordEncoder.encode(rawPassword);
-	        System.out.println("Encoded password: " + encodedPassword);
+		System.out.println("\n\n\n\t\t\tCongratulations!!!\n\t\tBackend Running successfully started.\n\n");
 
 	}
 

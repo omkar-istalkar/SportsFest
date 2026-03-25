@@ -85,6 +85,7 @@ public class FormFieldApiController {
                type.equals("number") ||
                type.equals("dropdown") ||
                type.equals("radio") ||
-               type.equals("file"); // ✅ NEW
+               type.equals("file") ||
+               type.equals("excel");
     }
 }

@@ -108,6 +108,7 @@ focus:ring-1 focus:ring-blue-500
             <option value="dropdown">Dropdown</option>
             <option value="radio">Radio</option>
             <option value="file">File Upload </option>
+            <option value="excel">Excel Upload</option>
           </select>
         </div>
 

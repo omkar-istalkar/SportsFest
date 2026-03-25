@@ -9,13 +9,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.entity.Event;
+import com.example.demo.entity.FormField;
 import com.example.demo.entity.Registration;
 import com.example.demo.entity.User;
 import com.example.demo.enums.RegistrationStatus;
 import com.example.demo.repository.EventRepository;
+import com.example.demo.repository.FormFieldRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.RegistrationService;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.example.demo.service.ExcelService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -39,6 +41,12 @@ public class RegistrationApiController {
     @Autowired
     private UploadedFileRepository uploadedFileRepository;
 
+    @Autowired
+    private FormFieldRepository fieldRepository;
+
+    @Autowired
+    private ExcelService excelService;
+
     @GetMapping
     public List<Registration> getAllRegistrations() {
         return registrationService.getAllRegistrations();
@@ -48,6 +56,7 @@ public class RegistrationApiController {
     public List<Registration> getRegistrationsByEvent(@PathVariable Long eventId) {
         return registrationService.getRegistrationsByEvent(eventId);
     }
+
     @PostMapping("/approve/{id}")
     public void approveRegistration(@PathVariable Long id) {
         registrationService.approveRegistration(id);
@@ -64,6 +73,8 @@ public class RegistrationApiController {
             @RequestParam String data,
             @RequestParam(required = false) List<MultipartFile> files,
             @RequestParam(required = false) List<Long> fileFieldIds,
+            @RequestParam(required = false) List<MultipartFile> excelFiles,
+            @RequestParam(required = false) List<Long> excelFieldIds,
             Authentication authentication
     ) {
 
@@ -83,6 +94,7 @@ public class RegistrationApiController {
 
             // 3️⃣ Convert JSON → Map
             ObjectMapper mapper = new ObjectMapper();
+            @SuppressWarnings("unchecked")
             Map<String, Object> dataMap = mapper.readValue(data, Map.class);
 
             // 4️⃣ Create registration
@@ -94,10 +106,12 @@ public class RegistrationApiController {
 
             Registration saved = registrationService.saveRegistration(registration);
 
-            // 5️⃣ Handle file upload
+            // 5️⃣ Handle FILE upload (unchanged)
             if (files != null && fileFieldIds != null) {
 
-                for (int i = 0; i < files.size(); i++) {
+                int size = Math.min(files.size(), fileFieldIds.size());
+
+                for (int i = 0; i < size; i++) {
 
                     MultipartFile file = files.get(i);
                     Long fieldId = fileFieldIds.get(i);
@@ -115,7 +129,6 @@ public class RegistrationApiController {
 
                     UploadedFile savedFile = uploadedFileRepository.save(upload);
 
-                    // 🔥 UPDATE JSON
                     Map<String, Object> fileObj = new HashMap<>();
                     fileObj.put("type", "file");
                     fileObj.put("fileId", savedFile.getId());
@@ -124,11 +137,56 @@ public class RegistrationApiController {
                 }
             }
 
-            // 6️⃣ Save updated JSON
+            // 🔥 6️⃣ HANDLE EXCEL FILES (FINAL SAFE VERSION)
+            if (excelFiles != null && excelFieldIds != null) {
+
+                int size = Math.min(excelFiles.size(), excelFieldIds.size());
+
+                for (int i = 0; i < size; i++) {
+
+                    MultipartFile excelFile = excelFiles.get(i);
+                    Long fieldId = excelFieldIds.get(i);
+
+                    // ✅ Validate empty
+                    if (excelFile.isEmpty()) {
+                        throw new RuntimeException("Excel file is empty");
+                    }
+
+                    // ✅ Validate extension
+                    if (excelFile.getOriginalFilename() == null ||
+                        !excelFile.getOriginalFilename().endsWith(".xlsx")) {
+                        throw new RuntimeException("Only .xlsx files allowed");
+                    }
+
+                    // ✅ Validate field type
+                    FormField field = fieldRepository.findById(fieldId).orElse(null);
+
+                    if (field == null || field.getFieldType() == null ||
+                        !field.getFieldType().equalsIgnoreCase("EXCEL")) {
+                        continue;
+                    }
+
+                    // ✅ Process Excel
+                    Long excelUploadId = excelService.process(
+                            excelFile,
+                            saved.getRegistrationId(),
+                            fieldId
+                    );
+
+                    // ✅ Store structured JSON
+                    Map<String, Object> excelObj = new HashMap<>();
+                    excelObj.put("type", "excel");
+                    excelObj.put("excelUploadId", excelUploadId);
+
+                    dataMap.put(String.valueOf(fieldId), excelObj);
+                }
+            }
+
+            // 7️⃣ Save updated JSON
             saved.setDynamicData(mapper.writeValueAsString(dataMap));
             registrationService.saveRegistration(saved);
 
-            // 7️⃣ Response
+            // 8️⃣ Response
             response.put("registrationId", saved.getRegistrationId());
 
         } catch (Exception e) {
@@ -140,11 +198,10 @@ public class RegistrationApiController {
     }
 
     private boolean isValidType(String type) {
-    return type.equals("image/jpeg") ||
-           type.equals("image/png") ||
-           type.equals("application/pdf") ||
-           type.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document") ||
-           type.equals("text/plain");
-}
-
+        return type.equals("image/jpeg") ||
+               type.equals("image/png") ||
+               type.equals("application/pdf") ||
+               type.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document") ||
+               type.equals("text/plain");
+    }
 }
