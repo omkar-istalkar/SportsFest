@@ -7,6 +7,7 @@ import { X } from "lucide-react";
 import { renderValue } from "../lib/renderValue.jsx";
 import FilePreviewModal from "../components/FilePreviewModal";
 import useFilePreview from "../hooks/useFilePreview.jsx";
+import ExcelPreview from "../components/Excelpreview.jsx";
 
 const API = "http://localhost:8080/api";
 
@@ -17,8 +18,14 @@ const Registrations = () => {
   const [selected, setSelected] = useState(null);
 
   // ✅ HOOK (correct usage)
-  const { previewUrl, previewType, previewFile, closePreview } =
-    useFilePreview();
+  const {
+  previewUrl,
+  previewType,
+  previewFile,
+  previewExcel,   // ✅ MUST BE HERE
+  excelId,
+  closePreview,
+} = useFilePreview();
 
   const loadData = async () => {
     try {
@@ -232,7 +239,7 @@ to-[#0f172a]
                           </td>
 
                           <td>
-                            {renderValue(data[field.id], previewFile)}
+                            {renderValue(data[field.id], previewFile, previewExcel)}
                           </td>
                         </tr>
                       );
@@ -246,6 +253,13 @@ to-[#0f172a]
                   type={previewType}
                   onClose={closePreview}
                 />
+
+                {excelId && (
+                  <ExcelPreview
+                    excelId={excelId}
+                    onClose={closePreview}
+                  />
+                )}
               </div>
             </div>
           </motion.div>

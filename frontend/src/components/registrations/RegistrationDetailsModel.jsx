@@ -10,6 +10,9 @@ const RegistrationDetailsModal = ({ registration, fields, close }) => {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [previewType, setPreviewType] = useState(null);
 
+  // ✅ NEW STATE (Excel)
+  const [excelData, setExcelData] = useState(null);
+
   // ✅ FETCH FILE FOR PREVIEW
   const previewFile = async (fileId) => {
     try {
@@ -21,41 +24,69 @@ const RegistrationDetailsModal = ({ registration, fields, close }) => {
       const url = URL.createObjectURL(blob);
 
       setPreviewUrl(url);
-      setPreviewType(blob.type); // important
+      setPreviewType(blob.type);
     } catch (err) {
       console.error(err);
       alert("Failed to preview file");
     }
   };
 
-  // ✅ CLOSE PREVIEW
+  // ✅ NEW: FETCH EXCEL DATA
+  const previewExcel = async (excelId) => {
+    try {
+      const res = await fetch(`http://localhost:8080/api/excel/${excelId}`);
+
+      if (!res.ok) throw new Error("Failed to fetch excel");
+
+      const data = await res.json();
+
+      setExcelData(data);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to load excel");
+    }
+  };
+
+  // ✅ CLOSE FILE PREVIEW
   const closePreview = () => {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setPreviewUrl(null);
     setPreviewType(null);
   };
 
-  // ✅ HANDLE VALUE (FIX + PREVIEW)
+  // ✅ HANDLE VALUE (UPDATED)
   const renderValue = (value) => {
-    if (!value) return "-";
+  if (!value) return "-";
 
-    if (typeof value === "object") {
-      if (value.fileId) {
-        return (
-          <button
-            onClick={() => previewFile(value.fileId)}
-            className="text-blue-400 hover:text-blue-300 underline"
-          >
-            👁 View File
-          </button>
-        );
-      }
-      return JSON.stringify(value);
+  if (typeof value === "object") {
+
+    if (value.fileId) {
+      return (
+        <button
+          onClick={() => previewFile(value.fileId)}
+          className="text-blue-400 hover:text-blue-300 underline"
+        >
+          👁 View File
+        </button>
+      );
     }
 
-    return value;
-  };
+    if (value.type === "excel") {
+      return (
+        <button
+          onClick={() => previewExcel(value.excelUploadId)}
+          className="text-green-400 hover:text-green-300 underline"
+        >
+          📊 View Excel
+        </button>
+      );
+    }
 
+    return JSON.stringify(value);
+  }
+
+  return value;
+};
   return (
     <>
       {/* MAIN MODAL */}
@@ -97,7 +128,7 @@ to-[#0f172a]
             {/* INFO */}
             <div className="space-y-2 mb-6">
               <p>
-                <b>Registration ID:</b> SF-{registration.id}
+                <b>Registration ID:</b> {registration.registrationId}
               </p>
 
               <p>
@@ -155,7 +186,7 @@ to-[#0f172a]
         </motion.div>
       </motion.div>
 
-      {/* ✅ PREVIEW MODAL */}
+      {/* FILE PREVIEW MODAL */}
       {previewUrl && (
         <div
           className="fixed inset-0 bg-black/80 flex items-center justify-center z-[60] p-4"
@@ -171,31 +202,65 @@ to-[#0f172a]
               </button>
             </div>
 
-            {/* IMAGE PREVIEW */}
             {previewType.startsWith("image") && (
-              <img
-                src={previewUrl}
-                alt="preview"
-                className="max-h-[80vh] mx-auto"
-              />
+              <img src={previewUrl} className="max-h-[80vh] mx-auto" />
             )}
 
-            {/* PDF PREVIEW */}
             {previewType === "application/pdf" && (
-              <iframe
-                src={previewUrl}
-                title="PDF Preview"
-                className="w-full h-[80vh]"
-              />
+              <iframe src={previewUrl} className="w-full h-[80vh]" />
             )}
 
-            {/* OTHER FILE */}
             {!previewType.startsWith("image") &&
               previewType !== "application/pdf" && (
-                <div className="text-center text-white">
+                <div className="text-white text-center">
                   Preview not supported
                 </div>
               )}
+          </div>
+        </div>
+      )}
+
+      {/* 🔥 EXCEL PREVIEW MODAL */}
+      {excelData && (
+        <div
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-[60] p-4"
+          onClick={() => setExcelData(null)}
+        >
+          <div
+            className="bg-[#020617] rounded-xl p-4 max-w-5xl w-full overflow-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-end mb-2">
+              <button onClick={() => setExcelData(null)}>
+                <X />
+              </button>
+            </div>
+
+            <h3 className="text-white mb-3">Excel Preview</h3>
+
+            <table className="w-full text-sm border border-border">
+              <thead>
+                <tr>
+                  {excelData.columns.map((col, i) => (
+                    <th key={i} className="border px-2 py-1 text-white">
+                      {col}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+
+              <tbody>
+                {excelData.rows.map((row, i) => (
+                  <tr key={i}>
+                    {row.map((cell, j) => (
+                      <td key={j} className="border px-2 py-1 text-gray-300">
+                        {cell}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}

@@ -5,10 +5,17 @@ import { X } from "lucide-react";
 import FilePreviewModal from "../FilePreviewModal.jsx";
 import { renderValue } from "../../lib/renderValue.jsx";
 import useFilePreview from "../../hooks/useFilePreview.jsx";
+import ExcelPreview from "../Excelpreview.jsx";
 
 const ResponsesModal = ({ event, close }) => {
-  const { previewUrl, previewType, previewFile, closePreview } =
-    useFilePreview();
+  const {
+  previewUrl,
+  previewType,
+  previewFile,
+  previewExcel,
+  excelId,
+  closePreview,
+} = useFilePreview();
 
   const modalRef = useRef();
 
@@ -139,7 +146,7 @@ to-[#0f172a]
 
                         {fields.map((field) => (
                           <td key={field.id} className="max-w-[150px] truncate">
-                            {renderValue(data[field.id], previewFile) || "-"}
+                            {renderValue(data[field.id], previewFile, previewExcel) || "-"}
                           </td>
                         ))}
 
@@ -185,6 +192,14 @@ ${reg.status === "PENDING" && "bg-yellow-500/20 text-yellow-400"}
                 type={previewType}
                 onClose={closePreview}
               />
+
+              {/* 🔥 EXCEL PREVIEW */}
+              {excelId && (
+                <ExcelPreview
+                  excelId={excelId}
+                  onClose={closePreview}
+                />
+              )}
             </div>
           )}
 
