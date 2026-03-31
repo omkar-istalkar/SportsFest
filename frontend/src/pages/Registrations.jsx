@@ -17,15 +17,19 @@ const Registrations = () => {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(null);
 
-  // ✅ HOOK (correct usage)
+  // ✅ RECEIPT STATE (ADDED)
+  const [receiptUrl, setReceiptUrl] = useState(null);
+  const [showReceipt, setShowReceipt] = useState(false);
+
+  // ✅ FILE/EXCEL HOOK
   const {
-  previewUrl,
-  previewType,
-  previewFile,
-  previewExcel,   // ✅ MUST BE HERE
-  excelId,
-  closePreview,
-} = useFilePreview();
+    previewUrl,
+    previewType,
+    previewFile,
+    previewExcel,
+    excelId,
+    closePreview,
+  } = useFilePreview();
 
   const loadData = async () => {
     try {
@@ -79,6 +83,26 @@ const Registrations = () => {
       }
     } catch (err) {
       console.error("Failed loading fields:", err);
+    }
+  };
+
+  // ✅ RECEIPT PREVIEW FUNCTION (ADDED)
+  const previewReceipt = async () => {
+    try {
+      const res = await fetch(
+        `http://localhost:8080/api/registration/REG-${selected.id}/receipt/preview`,{credentials:"include"}
+      );
+
+      if (!res.ok) throw new Error("Failed");
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      setReceiptUrl(url);
+      setShowReceipt(true);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to preview receipt");
     }
   };
 
@@ -144,14 +168,14 @@ ${reg.status === "PENDING" && "bg-yellow-500/20 text-yellow-400"}
                           {reg.status === "PENDING" ? (
                             <div className="flex flex-wrap gap-2">
                               <button
-                                className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-green-500/20 text-green-400 rounded"
+                                className="px-2 py-1 bg-green-500/20 text-green-400 rounded"
                                 onClick={() => approve(reg.id)}
                               >
                                 Approve
                               </button>
 
                               <button
-                                className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-red-500/20 text-red-400 rounded"
+                                className="px-2 py-1 bg-red-500/20 text-red-400 rounded"
                                 onClick={() => reject(reg.id)}
                               >
                                 Reject
@@ -159,7 +183,7 @@ ${reg.status === "PENDING" && "bg-yellow-500/20 text-yellow-400"}
                             </div>
                           ) : (
                             <button
-                              className="px-3 py-1 text-xs sm:text-sm bg-blue-500/20 text-blue-400 rounded"
+                              className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded"
                               onClick={() => openDetails(reg)}
                             >
                               View Details
@@ -182,87 +206,72 @@ ${reg.status === "PENDING" && "bg-yellow-500/20 text-yellow-400"}
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="
-w-full max-w-xl
-max-h-[90vh]
-overflow-y-auto
-rounded-2xl
-border border-border
-shadow-2xl
-bg-gradient-to-br
-from-[#020617]
-via-[#020617]
-to-[#0f172a]
-"
+            className="w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl border border-border shadow-2xl bg-gradient-to-br from-[#020617] via-[#020617] to-[#0f172a]"
           >
-            <div className="flex justify-between items-center px-4 sm:px-6 py-3 border-b border-border">
-              <h2 className="text-base sm:text-lg font-semibold">
-                Registration Details
-              </h2>
-
+            <div className="flex justify-between items-center px-4 py-3 border-b border-border">
+              <h2 className="text-lg font-semibold">Registration Details</h2>
               <button onClick={() => setSelected(null)}>
                 <X size={20} />
               </button>
             </div>
 
-            <div className="p-4 sm:p-6">
-              <div className="space-y-2 mb-5 text-sm">
-                <p>
-                  <b>Registration ID:</b> REG-{selected.id}
-                </p>
-                <p>
-                  <b>Status:</b> {selected.status}
-                </p>
-                <p>
-                  <b>Registered At:</b> {selected.registeredAt}
-                </p>
+            <div className="p-4">
+              <div className="space-y-2 mb-4 text-sm">
+                <p><b>ID:</b> REG-{selected.id}</p>
+                <p><b>Status:</b> {selected.status}</p>
+                <p><b>Date:</b> {selected.registeredAt}</p>
               </div>
 
-              <hr className="border-border mb-4" />
+              <hr className="mb-4" />
 
-              <h3 className="font-semibold mb-3 text-sm sm:text-base">
-                Submitted Details
-              </h3>
+              {/* ✅ HEADER + BUTTON */}
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="font-semibold">Submitted Details</h3>
 
-              <div className="overflow-x-auto">
-                <table className="min-w-[400px] w-full text-sm border border-border">
-                  <tbody>
-                    {fields.map((field) => {
-                      const data = selected.dynamicData
-                        ? JSON.parse(selected.dynamicData)
-                        : {};
-
-                      return (
-                        <tr key={field.id} className="border-b border-border">
-                          <td className="px-3 py-2 font-medium break-words">
-                            {field.label}
-                          </td>
-
-                          <td>
-                            {renderValue(data[field.id], previewFile, previewExcel)}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-
-                {/* ✅ PREVIEW MODAL (kept as you wrote, just correctly placed) */}
-                <FilePreviewModal
-                  url={previewUrl}
-                  type={previewType}
-                  onClose={closePreview}
-                />
-
-                {excelId && (
-                  <ExcelPreview
-                    excelId={excelId}
-                    onClose={closePreview}
-                  />
-                )}
+                <button
+                  onClick={previewReceipt}
+                  className="px-3 py-1 bg-blue-600 text-white rounded text-sm"
+                >
+                  📄 View Receipt
+                </button>
               </div>
+
+              <table className="w-full text-sm border">
+                <tbody>
+                  {fields.map((field) => {
+                    const data = selected.dynamicData
+                      ? JSON.parse(selected.dynamicData)
+                      : {};
+
+                    return (
+                      <tr key={field.id}>
+                        <td className="p-2">{field.label}</td>
+                        <td>{renderValue(data[field.id], previewFile, previewExcel)}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+
+              <FilePreviewModal url={previewUrl} type={previewType} onClose={closePreview} />
+              {excelId && <ExcelPreview excelId={excelId} onClose={closePreview} />}
             </div>
           </motion.div>
+        </div>
+      )}
+
+      {/* ✅ RECEIPT PREVIEW MODAL */}
+      {showReceipt && receiptUrl && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[70] p-4">
+          <div className="bg-[#020617] p-3 rounded-xl w-full max-w-4xl">
+            <div className="flex justify-end">
+              <button onClick={() => setShowReceipt(false)}>
+                <X />
+              </button>
+            </div>
+
+            <iframe src={receiptUrl} className="w-full h-[80vh]" />
+          </div>
         </div>
       )}
     </div>

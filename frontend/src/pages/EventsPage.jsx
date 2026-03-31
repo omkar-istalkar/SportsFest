@@ -5,7 +5,6 @@ import Sidebar from "../components/dashboard/Sidebar";
 import Header from "../components/dashboard/Header";
 
 export default function EventsPage() {
-
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
@@ -23,16 +22,13 @@ export default function EventsPage() {
 
   return (
     <div className="flex bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 min-h-screen text-white">
-
       <Sidebar role="USER" />
 
       <main className="flex-1 ml-0 md:ml-[220px] px-4 sm:px-6 lg:px-8 py-6">
-
         <Header role="USER" name="User" />
 
         {/* Page Title */}
         <div className="mb-6 sm:mb-10 mt-4 sm:mt-6">
-
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-wide">
             Explore SportsFest Events
           </h1>
@@ -40,14 +36,11 @@ export default function EventsPage() {
           <p className="text-gray-400 mt-2 text-sm sm:text-base">
             Register for upcoming competitions and activities.
           </p>
-
         </div>
 
         {/* Events Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-
           {events.map((event) => (
-
             <div
               key={event.id}
               className="
@@ -64,38 +57,52 @@ export default function EventsPage() {
               hover:shadow-blue-900/30
               "
             >
+              {/* ✅ Badge */}
+              <div className="absolute top-0 right-0 overflow-hidden w-24 h-24">
+                <div
+                  className={`
+                    absolute top-4 right-[-30px]
+                    rotate-45
+                    text-xs font-bold
+                    px-8 py-1
+                    text-black
+                    shadow-lg
+                    ${
+                      event.isPaid
+                        ? "bg-gradient-to-r from-yellow-300 to-orange-500"
+                        : "bg-gradient-to-r from-green-400 to-emerald-500"
+                    }
+                  `}
+                >
+                  {event.isPaid ? "PAID" : "FREE"}
+                </div>
+              </div>
 
               {/* Event Title */}
               <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold mb-2 group-hover:text-blue-400 transition line-clamp-1">
-
                 {event.name}
-
               </h3>
 
               {/* Description */}
               <p className="text-gray-400 text-xs sm:text-sm mb-4 sm:mb-5 line-clamp-2">
-
                 {event.description}
-
               </p>
 
               {/* Deadline */}
-              <div className="mb-4 sm:mb-6">
-
-                <span className="
-                bg-red-500/20
-                text-red-400
-                px-3 py-1
-                rounded-full
-                text-[10px] sm:text-xs
-                font-medium
-                ">
-
+              <div className="mb-3">
+                <span className="bg-red-500/20 text-red-400 px-3 py-1 rounded-full text-[10px] sm:text-xs font-medium">
                   Deadline: {event.deadline}
-
                 </span>
-
               </div>
+
+              {/* 💰 Price (only if paid) */}
+              {event.isPaid && (
+                <div className="mb-4">
+                  <span className="text-yellow-400 font-semibold text-sm">
+                    Entry Fee: ₹{event.amount}
+                  </span>
+                </div>
+              )}
 
               {/* Register Button */}
               <Link
@@ -117,30 +124,19 @@ export default function EventsPage() {
                 hover:shadow-blue-900/40
                 "
               >
-
                 Register Now
-
               </Link>
-
             </div>
-
           ))}
-
         </div>
 
         {/* Empty State */}
         {events.length === 0 && (
-
           <div className="text-center mt-12 sm:mt-20 text-gray-400 text-sm sm:text-base">
-
             No events available right now.
-
           </div>
-
         )}
-
       </main>
-
     </div>
   );
 }

@@ -46,17 +46,32 @@ public class EventService
 	    eventRepository.deleteById(id);
 	}
 	
+	@Transactional
 	public void updateEvent(Event updatedEvent) {
 
-	    Event existingEvent = eventRepository.findById(updatedEvent.getId())
-	            .orElseThrow(() -> new RuntimeException("Event not found"));
+		Event existingEvent = eventRepository.findById(updatedEvent.getId())
+				.orElseThrow(() -> new RuntimeException("Event not found"));
 
-	    existingEvent.setName(updatedEvent.getName());
-	    existingEvent.setDescription(updatedEvent.getDescription());
-	    existingEvent.setDeadline(updatedEvent.getDeadline());
-	    existingEvent.setActive(updatedEvent.getActive());
+		existingEvent.setName(updatedEvent.getName());
+		existingEvent.setDescription(updatedEvent.getDescription());
+		existingEvent.setDeadline(updatedEvent.getDeadline());
+		existingEvent.setActive(updatedEvent.getActive());
 
-	    eventRepository.save(existingEvent);
+		// ✅ ADD THESE (IMPORTANT)
+		existingEvent.setRegistrationType(updatedEvent.getRegistrationType());
+		existingEvent.setEventType(updatedEvent.getEventType());
+		existingEvent.setTeamSize(updatedEvent.getTeamSize());
+
+		// ✅ Payment logic
+		existingEvent.setIsPaid(updatedEvent.getIsPaid());
+
+		if (Boolean.TRUE.equals(updatedEvent.getIsPaid())) {
+			existingEvent.setAmount(updatedEvent.getAmount());
+		} else {
+			existingEvent.setAmount(0);
+		}
+		System.out.println("Previous: \n\tExisting status: "+existingEvent.getIsPaid()+"\n\tExisting Amount: "+existingEvent.getAmount()+"Updated:\n\tStatus: "+updatedEvent.getIsPaid()+"\n\tAmount: "+updatedEvent.getAmount());
+		eventRepository.save(existingEvent);
 	}
 	
 	public void toggleEventStatus(Long id) {

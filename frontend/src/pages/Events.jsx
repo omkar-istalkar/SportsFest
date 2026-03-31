@@ -34,6 +34,7 @@ const Events = () => {
 
   const loadEvents = async () => {
     const res = await getEvents()
+    console.log("EVENT RESPONSE:", res.data)
     setEvents(res.data)
   }
 
@@ -121,6 +122,8 @@ const Events = () => {
                     <th className="text-left">Name</th>
                     <th className="text-left">Deadline</th>
                     <th className="text-left">Status</th>
+                    <th className="text-left">Is it free</th>
+                    <th className="text-left">Amount</th>
                     <th className="text-left">Actions</th>
                   </tr>
 
@@ -143,6 +146,7 @@ const Events = () => {
                       <td className="font-medium max-w-[200px] truncate">
                         {event.name}
                       </td>
+
 
                       <td className="whitespace-nowrap">{event.deadline}</td>
 
@@ -171,6 +175,14 @@ const Events = () => {
 
                         </div>
 
+                      </td>
+
+                      <td className="font-medium max-w-[200px] truncate">
+                        {event.isPaid ? "Paid": "Free"}
+                      </td>
+
+                      <td className="font-medium max-w-[200px] truncate">
+                        {event.amount || 0}
                       </td>
 
                       {/* Actions */}

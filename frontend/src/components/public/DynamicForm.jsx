@@ -138,6 +138,35 @@ export default function DynamicForm({ fields = [], eventId }) {
             <span className="inline-block px-4 py-1 text-xs rounded-full bg-red-500/20 text-red-400">
               Deadline: {selectedEvent.deadline}
             </span>
+
+            <div className="absolute top-0 right-0 overflow-hidden w-24 h-24">
+                <div
+                  className={`
+                    absolute top-4 right-[-30px]
+                    rotate-45
+                    text-xs font-bold
+                    px-8 py-1
+                    text-black
+                    shadow-lg
+                    ${
+                      selectedEvent.isPaid
+                        ? "bg-gradient-to-r from-yellow-300 to-orange-500"
+                        : "bg-gradient-to-r from-green-400 to-emerald-500"
+                    }
+                  `}
+                >
+                  {selectedEvent.isPaid ? "PAID" : "FREE"}
+                </div>
+            </div>
+
+            {selectedEvent.isPaid && (
+                <div className="mb-4">
+                  <span className="text-yellow-400 font-semibold text-sm">
+                    Amount : ₹{selectedEvent.amount}
+                  </span>
+                </div>
+              )}
+            
           </div>
         ) : (
           <p className="text-center text-gray-400 mb-6">

@@ -69,7 +69,6 @@ export default function EventRegisterPage() {
         <p className="text-gray-600 text-sm sm:text-base mb-4 sm:mb-6 break-words">
           {event?.description}
         </p>
-
         {/* Form */}
         <DynamicForm fields={fields} eventId={id} />
 

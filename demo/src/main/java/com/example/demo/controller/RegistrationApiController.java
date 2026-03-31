@@ -17,6 +17,7 @@ import com.example.demo.repository.EventRepository;
 import com.example.demo.repository.FormFieldRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.RegistrationService;
+import com.example.demo.service.TransactionDataService;
 import com.example.demo.service.ExcelService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -46,6 +47,9 @@ public class RegistrationApiController {
 
     @Autowired
     private ExcelService excelService;
+
+    @Autowired
+    private TransactionDataService tService;
 
     @GetMapping
     public List<Registration> getAllRegistrations() {
@@ -185,6 +189,8 @@ public class RegistrationApiController {
             // 7️⃣ Save updated JSON
             saved.setDynamicData(mapper.writeValueAsString(dataMap));
             registrationService.saveRegistration(saved);
+            
+            tService.SaveTransaction(saved.getRegistrationId());
 
             // 8️⃣ Response
             response.put("registrationId", saved.getRegistrationId());
@@ -204,4 +210,5 @@ public class RegistrationApiController {
                type.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document") ||
                type.equals("text/plain");
     }
+
 }

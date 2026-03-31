@@ -64,6 +64,7 @@ const RegistrationsModal = ({ event, close }) => {
           <button onClick={close}>
             <X size={20} />
           </button>
+
         </div>
 
         {/* CONTENT */}

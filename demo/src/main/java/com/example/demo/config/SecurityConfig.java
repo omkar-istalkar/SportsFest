@@ -57,7 +57,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     "/events/**",
                     "/api/auth/**",
                     "/api/public/**",
-                    "/api/files/**"
+                    "/api/files/**",
+                    "/api/transaction/**"
             ).permitAll()
 
             .antMatchers("/api/dashboard/**").hasRole("ADMIN")

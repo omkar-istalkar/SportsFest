@@ -32,18 +32,11 @@ public class Event
 	private LocalDate deadline;
 	private Boolean active = true;
 	
-	public EventType getEventType() {
-		return eventType;
-	}
-	public void setEventType(EventType eventType) {
-		this.eventType = eventType;
-	}
 	@Enumerated(EnumType.STRING)
 	private RegistrationType registrationType;
 	
 	@Enumerated(EnumType.STRING)
 	private EventType eventType;
-
 	
 	private Integer teamSize;
 	
@@ -51,6 +44,15 @@ public class Event
 	@JsonManagedReference
     private List<FormField> fields;
 
+	private Boolean isPaid;
+	private Integer amount = 0;
+
+	public EventType getEventType() {
+		return eventType;
+	}
+	public void setEventType(EventType eventType) {
+		this.eventType = eventType;
+	}
 	
 	public Long getId() {
 		return id;
@@ -101,6 +103,19 @@ public class Event
 	}
 	public void setFields(List<FormField> fields) {
 		this.fields = fields;
+	}
+
+	public Boolean getIsPaid() {
+		return isPaid;
+	}
+	public void setIsPaid(Boolean isPaid) {
+		this.isPaid = isPaid;
+	}
+	public Integer getAmount() {
+		return amount;
+	}
+	public void setAmount(Integer amount) {
+		this.amount = amount;
 	}
 	
 }

@@ -14,7 +14,9 @@ const EventModal = ({ event, close, reload }) => {
     deadline: null,
     registrationType: "INDIVIDUAL",
     teamSize: 1,
-    active: true
+    active: true,
+    isPaid: false,
+    amount: 0
   })
 
   useEffect(() => {
@@ -26,30 +28,38 @@ const EventModal = ({ event, close, reload }) => {
     }
   }, [event])
 
-  const save = async () => {
+const save = async () => {
 
-    try {
+  try {
 
-      const payload = {
-        ...form,
-        deadline: form.deadline
-          ? form.deadline.toISOString().split("T")[0]
-          : null
-      }
-
-      if (event)
-        await updateEvent(event.id, payload)
-      else
-        await createEvent(payload)
-
-      reload()
-      close()
-
-    } catch (err) {
-      console.error("Event save error:", err)
+    const payload = {
+      ...form,
+      deadline: form.deadline
+        ? form.deadline.toISOString().split("T")[0]
+        : null
     }
 
+    console.log("Editing event:", event);
+    console.log("Payload:", payload); // ✅ NOW CORRECT
+
+    // Validation
+    if (form.isPaid && (!form.amount || form.amount <= 0)) {
+      alert("Please enter a valid amount for paid event");
+      return;
+    }
+
+    if (event)
+      await updateEvent(event.id, payload)
+    else
+      await createEvent(payload)
+
+    reload()
+    close()
+
+  } catch (err) {
+    console.error("Event save error:", err)
   }
+}
 
   // ESC key close
   useEffect(() => {
@@ -235,6 +245,75 @@ const EventModal = ({ event, close, reload }) => {
                 setForm({
                   ...form,
                   teamSize: e.target.value
+                })
+              }
+            />
+
+          </div>
+
+        )}
+
+        {/* Payment Type */}
+        <div className="mb-4 sm:mb-5">
+
+          <label className="text-sm text-muted-foreground mb-2 block">
+            Is Event Paid or Free?
+          </label>
+
+          <div className="flex gap-4">
+
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                checked={!form.isPaid}
+                onChange={() =>
+                  setForm({ ...form, isPaid: false, amount: 0 })
+                }
+              />
+              Free
+            </label>
+
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                checked={form.isPaid}
+                onChange={() =>
+                  setForm({ ...form, isPaid: true })
+                }
+              />
+              Paid
+            </label>
+
+          </div>
+
+        </div>
+
+        {/* Amount Field */}
+        {form.isPaid && (
+
+          <div className="mb-5 sm:mb-6">
+
+            <label className="text-sm text-muted-foreground mb-1 block">
+              Entry Fee (₹)
+            </label>
+
+            <input
+              type="number"
+              min="0"
+              className="
+              w-full px-3 py-2 rounded-lg
+              bg-muted/30
+              border border-border
+              focus:outline-none
+              focus:ring-1 focus:ring-yellow-500
+              transition
+              "
+              placeholder="Enter amount"
+              value={form.amount}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  amount: parseInt(e.target.value) || 0
                 })
               }
             />
