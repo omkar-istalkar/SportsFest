@@ -1,44 +1,60 @@
 package com.example.demo.controller;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.entity.Event;
 import com.example.demo.entity.FormField;
+import com.example.demo.entity.PublicUsers;
 import com.example.demo.entity.Registration;
+import com.example.demo.entity.UploadedFile;
 import com.example.demo.entity.User;
 import com.example.demo.enums.RegistrationStatus;
 import com.example.demo.repository.EventRepository;
 import com.example.demo.repository.FormFieldRepository;
-import com.example.demo.repository.UserRepository;
+import com.example.demo.repository.PublicUserRepository;
+import com.example.demo.repository.RegistrationRepository;
+import com.example.demo.repository.UploadedFileRepository;
+import com.example.demo.service.CaptchaService;
+import com.example.demo.service.ExcelService;
+import com.example.demo.service.FormFieldService;
+import com.example.demo.service.ReceiptService;
 import com.example.demo.service.RegistrationService;
 import com.example.demo.service.TransactionDataService;
-import com.example.demo.service.ExcelService;
-import com.example.demo.service.ReceiptService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.springframework.web.multipart.MultipartFile;
-import com.example.demo.entity.UploadedFile;
-import com.example.demo.repository.UploadedFileRepository;
-
 @RestController
-@RequestMapping("/api/registrations")
-@CrossOrigin(origins = "http://localhost:5173")
-public class RegistrationApiController {
+@RequestMapping("/global-events/")
+public class CaptchaController 
+{
+    @Autowired
+    private CaptchaService captchaService;
 
     @Autowired
     private RegistrationService registrationService;
 
     @Autowired
-    private EventRepository eventRepository;
+    private FormFieldService fieldService;
 
     @Autowired
-    private UserRepository userRepository;
+    private PublicUserRepository userRepository;
+
+    @Autowired
+    private EventRepository eventRepository;
 
     @Autowired
     private UploadedFileRepository uploadedFileRepository;
@@ -55,65 +71,79 @@ public class RegistrationApiController {
     @Autowired
     private ReceiptService receiptService;
 
-    @GetMapping
-    public List<Registration> getAllRegistrations() {
-        return registrationService.getAllRegistrations();
+    @Autowired
+    private RegistrationRepository repository;
+
+    @GetMapping("/generate-captcha")
+    public Map<String, String> generateCaptcha(
+        @RequestParam Long eventId,
+        HttpSession session
+    )
+    {
+        String captcha = captchaService.generateCaptcha(4);
+        session.setAttribute("captcha", captcha);
+        session.setAttribute("eventId", eventId);
+        session.setAttribute("captchaTime", Instant.now());
+        session.setAttribute("verified", false);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("captcha", captcha);
+        return response;
     }
 
-    @GetMapping("/event/{eventId}")
-    public List<Registration> getRegistrationsByEvent(@PathVariable Long eventId) {
-        return registrationService.getRegistrationsByEvent(eventId);
+    @PostMapping("/verify-captcha")
+    public boolean verifyCaptcha(
+        @RequestParam String captcha, HttpSession session
+    )
+    {
+        Boolean result = captchaService.validCaptcha(captcha, (String)session.getAttribute("captcha"));
+        if(result){
+            return true;
+        }
+        return false;
     }
 
-    @PostMapping("/approve/{id}")
-    public void approveRegistration(@PathVariable Long id) {
-        registrationService.approveRegistration(id);
-    }
-
-    @PostMapping("/reject/{id}")
-    public void rejectRegistration(@PathVariable Long id) {
-        registrationService.rejectRegistration(id);
+    @GetMapping("/events-fields/{id}")
+    public List<FormField> getEventFields(@PathVariable Long id)
+    {
+        List<FormField> response = fieldService.getFieldsByEvent(id);
+        return response;
     }
 
     @PostMapping("/submit-registration")
     public Map<String, Object> submitRegistration(
-            @RequestParam Long eventId,
-            @RequestParam String data,
-            @RequestParam(required = false) List<MultipartFile> files,
-            @RequestParam(required = false) List<Long> fileFieldIds,
-            @RequestParam(required = false) List<MultipartFile> excelFiles,
-            @RequestParam(required = false) List<Long> excelFieldIds,
-            Authentication authentication
-    ) {
-
+        @RequestParam Long eventId,
+        @RequestParam String data,
+        @RequestParam(required = false) List<MultipartFile> files,
+        @RequestParam(required = false) List<Long> fileFieldIds,
+        @RequestParam(required = false) List<MultipartFile>excelFiles,
+        @RequestParam(required = false) List<Long> excelFieldIds
+    )
+    {
         Map<String, Object> response = new HashMap<>();
+        ObjectMapper mapper = new ObjectMapper();
+        PublicUsers user = new PublicUsers();
+       try {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> dataMap = mapper.readValue(data, Map.class);
+        String username = (String)dataMap.get("name");
+        String userEmail = (String)dataMap.get("email");
 
-        try {
+        user.setName(username);
+        user.setEmail(userEmail);
 
-            // 1️⃣ Get logged user
-            String email = authentication.getName();
+        PublicUsers newUser = userRepository.save(user);
 
-            User user = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-
-            // 2️⃣ Get event
-            Event event = eventRepository.findById(eventId)
+        Event event = eventRepository.findById(eventId)
                     .orElseThrow(() -> new RuntimeException("Event not found"));
 
-            // 3️⃣ Convert JSON → Map
-            ObjectMapper mapper = new ObjectMapper();
-            @SuppressWarnings("unchecked")
-            Map<String, Object> dataMap = mapper.readValue(data, Map.class);
+        Registration registration = new Registration();
+        registration.setUser(null);                registration.setEvent(event);
+        registration.setStatus(RegistrationStatus.PENDING);
+        registration.setDynamicData(data);
+        registration.setPublicUser(newUser);
 
-            // 4️⃣ Create registration
-            Registration registration = new Registration();
-            registration.setUser(user);
-            registration.setEvent(event);
-            registration.setStatus(RegistrationStatus.PENDING);
-            registration.setDynamicData(data);
-            registration.setPublicUser(null);
-
-            Registration saved = registrationService.saveRegistration(registration);
+        Registration saved = registrationService.saveRegistration(registration);
 
             // 5️⃣ Handle FILE upload (unchanged)
             if (files != null && fileFieldIds != null) {
@@ -198,7 +228,6 @@ public class RegistrationApiController {
             tService.SaveTransaction(saved.getRegistrationId());
             receiptService.generateReceipt(saved.getRegistrationId());
 
-
             // 8️⃣ Response
             response.put("registrationId", saved.getRegistrationId());
 
@@ -208,6 +237,7 @@ public class RegistrationApiController {
         }
 
         return response;
+        
     }
 
     private boolean isValidType(String type) {
@@ -218,4 +248,30 @@ public class RegistrationApiController {
                type.equals("text/plain");
     }
 
+    @GetMapping("/public-user/REG-{id}")
+    public Map<String, String> getPublicUser(@PathVariable Long id){
+        String eventName = repository.findByRegistrationId("REG-"+id).getEvent().getName();
+        Registration reg = repository.findByRegistrationId("REG-"+id);
+        Long userId = reg.getPublicUser().getId();
+        Map<String, String>response = new HashMap<>();
+        Optional<PublicUsers> Optuser = userRepository.findById(userId) ;
+        PublicUsers user = Optuser.get();
+        response.put("name", user.getName());
+        response.put("email", user.getEmail());
+        response.put("eventName", eventName);
+        return response;
+    }
+
+    @GetMapping("/check-status/REG-{id}")
+    public Map<String, Object>getStatus(@PathVariable String id)
+    {
+        Map<String, Object>response = new HashMap<>();
+   
+        Registration registration = repository.findByRegistrationId("REG-"+id);
+        response.put("status",registration.getStatus());
+        response.put("event",registration.getEvent().getName());
+        response.put("regId",registration.getRegistrationId());
+
+        return response;
+    }
 }

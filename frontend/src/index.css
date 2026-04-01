@@ -192,3 +192,34 @@
 .animate-spin-slow {
   animation: spinSlow 35s linear infinite;
 }
+
+
+:root {
+  --background: 222 47% 6%;
+  --foreground: 210 40% 98%;
+
+  --card: 222 47% 10%;
+  --border: 222 47% 20%;
+
+  --muted: 222 47% 14%;
+  --muted-foreground: 210 20% 70%;
+
+  --primary: 260 80% 70%;
+  --accent: 330 80% 70%;
+}
+
+
+.dark {
+  --background: 210 40% 98%;
+  --foreground: 222 47% 11%;
+
+  --card: 0 0% 100%;
+  --border: 214 32% 91%;
+
+  --muted: 210 40% 90%;
+  --muted-foreground: 215 20% 40%;
+
+  --primary: 260 80% 60%;
+  --accent: 330 80% 60%;
+}
+

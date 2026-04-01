@@ -35,6 +35,12 @@ public class Registration {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "public_user_id")
+    private PublicUsers publicUser;
+
+
+
     public Long getId() {
         return id;
     }
@@ -89,6 +95,14 @@ public class Registration {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+        public PublicUsers getPublicUser() {
+        return publicUser;
+    }
+
+    public void setPublicUser(PublicUsers publicUser) {
+        this.publicUser = publicUser;
     }
 
     @PrePersist

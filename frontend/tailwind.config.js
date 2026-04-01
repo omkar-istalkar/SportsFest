@@ -1,5 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: "class", // ✅ REQUIRED for your toggle
+
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -8,6 +10,7 @@ export default {
   theme: {
     extend: {
       colors: {
+        // 🔥 EXISTING (kept as it is)
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
 
@@ -36,6 +39,21 @@ export default {
         glass: "hsl(var(--glass))",
         "glass-border": "hsl(var(--glass-border))",
 
+        // 🚀 NEW (for your UI)
+        neon: {
+          purple: "#7c3aed",
+          cyan: "#06b6d4",
+          pink: "#ec4899",
+        },
+
+        gradient: {
+          start: "#ff8a00",
+          end: "#e52e71",
+        },
+
+        glassWhite: "rgba(255,255,255,0.3)",
+        glassDark: "rgba(255,255,255,0.1)",
+
         sidebar: {
           background: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -57,6 +75,31 @@ export default {
 
       borderRadius: {
         xl: "var(--radius)",
+      },
+
+      // 🔥 BACKGROUND GRADIENTS (matches your aurora UI)
+      backgroundImage: {
+        aurora: `
+          radial-gradient(circle at 20% 20%, #7c3aed, transparent 40%),
+          radial-gradient(circle at 80% 30%, #06b6d4, transparent 40%),
+          radial-gradient(circle at 50% 80%, #ec4899, transparent 40%)
+        `,
+      },
+
+      // 🔥 ANIMATIONS (future-ready for your UI)
+      keyframes: {
+        float: {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
+      },
+
+      animation: {
+        float: "float 4s ease-in-out infinite",
+      },
+
+      boxShadow: {
+        glow: "0 0 20px rgba(0,200,255,0.5)",
       },
     },
   },

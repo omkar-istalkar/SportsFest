@@ -16,6 +16,11 @@ import RegisterPage from "./pages/RegisterPage.jsx";
 import UserDashboard from "./pages/UserDashboard.jsx";
 
 import UserPreviousRegistrations from "./pages/UserPreviousRegistrations.jsx";
+import PublicHome from "./public-events/pages/PublicHome.jsx";
+import VerifyCaptchaPage from "./public-events/pages/VerifyCaptchaPage.jsx";
+import GlobalEventRegister from "./public-events/pages/GlobalEventRegister.jsx";
+import RegistrationSuccess from "./public-events/pages/RegistrationSuccess.jsx";
+import StatusCheck from "./public-events/pages/StatusCheck.jsx";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +48,12 @@ const App = () => (
         <Route path="/user-dashboard" element={<UserDashboard />} />
         <Route path="/user-previous-registrations" element={<UserPreviousRegistrations/>}/>
 
+        {/* Global Public Events section routes */}
+        <Route path="/global-events" element={<PublicHome/>} />
+        <Route path="/global-events/verify-captcha" element={<VerifyCaptchaPage/>}/>
+        <Route path="/global-events/event-registration" element={<GlobalEventRegister/>}/>
+        <Route path="/global-events/registration-success/:id" element={<RegistrationSuccess/>}/>
+        <Route path="/global-events/status-check" element={<StatusCheck/>}/>
         {/* 404 */}
         <Route path="*" element={<NotFound />} />
 

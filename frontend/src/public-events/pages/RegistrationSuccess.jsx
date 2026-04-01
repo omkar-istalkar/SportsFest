@@ -1,13 +1,14 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation, data } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 
-export default function RegistrationSuccessPage() {
+export default function RegistrationSuccess() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [showReceipt, setShowReceipt] = useState(false);
   const [receiptData, setReceiptData] = useState(null);
   const [userData, setUserData] = useState(null);
+
 
   useEffect(() => {
     if (showReceipt) {
@@ -18,7 +19,7 @@ export default function RegistrationSuccessPage() {
   const fetchReceipt = async () => {
     try {
       const res = await fetch(`http://localhost:8080/api/transaction/${id}`, {credentials:"include"});
-      const res1 = await fetch(`http://localhost:8080/api/auth/${id}`, {credentials:"include"})
+      const res1 = await fetch(`http://localhost:8080/global-events/public-user/${id}`, {credentials:"include"})
       const data = await res.json();
       const data1 = await res1.json();
       setReceiptData(data);
@@ -99,14 +100,14 @@ export default function RegistrationSuccessPage() {
           </button>
 
           <button
-            onClick={() => navigate("/registration-status")}
+            onClick={() => navigate("/global-events/status-check")}
             className="px-4 py-2 rounded-md bg-blue-500/20 text-blue-400 hover:bg-blue-500/30"
           >
             Check Registration Status
           </button>
 
           <button
-            onClick={() => navigate("/events")}
+            onClick={() => navigate("/global-events")}
             className="px-4 py-2 rounded-md bg-muted/20 hover:bg-muted/30"
           >
             Back to Events
