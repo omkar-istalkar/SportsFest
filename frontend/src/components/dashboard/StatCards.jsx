@@ -10,7 +10,8 @@ const StatCards = () => {
   const [stats, setStats] = useState({
     totalEvents: 0,
     activeEvents: 0,
-    registrations: 0
+    registrations: 0,
+    revenue: 0
   });
 
   const [displayStats, setDisplayStats] = useState({
@@ -58,7 +59,7 @@ const StatCards = () => {
     animateValue("totalEvents", stats.totalEvents);
     animateValue("activeEvents", stats.activeEvents);
     animateValue("registrations", stats.registrations);
-    animateValue("revenue", STATIC_REVENUE);
+    animateValue("revenue", stats.revenue);
 
   }, [stats]);
 

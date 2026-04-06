@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,5 +40,13 @@ public class TransactionDataService
     public String GenerateTransId(String id)
     {
         return LocalDateTime.now()+id;
+    }
+
+    public List<TransactionData> getAllTransactions() {
+    return tRepository.findAll();
+}
+
+    public TransactionData getByRegistrationId(String regId) {
+        return tRepository.findByRegistrationId(regId);
     }
 }

@@ -10,10 +10,12 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.entity.Event;
 import com.example.demo.entity.Registration;
+import com.example.demo.entity.TransactionData;
 import com.example.demo.enums.RegistrationStatus;
 import com.example.demo.enums.RegistrationType;
 import com.example.demo.service.EventService;
 import com.example.demo.service.RegistrationService;
+import com.example.demo.service.TransactionDataService;
 
 @RestController
 @RequestMapping("/api/dashboard")
@@ -25,6 +27,9 @@ public class DashboardApiController {
 
     @Autowired
     private RegistrationService registrationService;
+        
+    @Autowired
+    private TransactionDataService transactionService;
 
     private int getPriority(LocalDate deadline, LocalDate today) {
 
@@ -54,6 +59,15 @@ public class DashboardApiController {
         map.put("totalEvents", eventService.getAllEvents().size());
         map.put("activeEvents", eventService.getActiveEvents().size());
         map.put("registrations", registrationService.getAllRegistrations().size());
+
+            int revenue = transactionService.getAllTransactions()
+            .stream()
+            .filter(t -> "SUCCESS".equalsIgnoreCase(t.getStatus()))
+            .mapToInt(t -> t.getAmount() != null ? t.getAmount() : 0)
+            .sum();
+
+        map.put("revenue", revenue);
+
 
         return map;
     }
@@ -175,6 +189,51 @@ public class DashboardApiController {
         }
 
         result.sort(Comparator.comparing(m -> (LocalDate) m.get("date")));
+
+        return result;
+    }
+
+    @GetMapping("/revenue")
+    public List<Map<String, Object>> getRevenueData() {
+
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        List<Event> events = eventService.getAllEvents();
+
+        for (Event event : events) {
+
+            List<Registration> regs = registrationService.getRegistrationsByEvent(event.getId());
+
+            int participants = 0;
+            int totalRevenue = 0;
+
+            for (Registration reg : regs) {
+
+                TransactionData txn = transactionService
+                        .getByRegistrationId(reg.getRegistrationId());
+
+                if (txn != null && "SUCCESS".equalsIgnoreCase(txn.getStatus())) {
+
+                    participants++; // ✅ only paid users
+
+                    totalRevenue += txn.getAmount() != null
+                            ? txn.getAmount()
+                            : 0;
+                }
+            }
+
+            int fee = event.getAmount() != null ? event.getAmount() : 0;
+
+            Map<String, Object> map = new HashMap<>();
+
+            map.put("id", "REV-" + event.getId());
+            map.put("event", event.getName());
+            map.put("participants", participants);
+            map.put("fee", fee);
+            map.put("total", totalRevenue);
+
+            result.add(map);
+        }
 
         return result;
     }

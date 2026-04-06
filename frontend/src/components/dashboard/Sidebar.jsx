@@ -15,7 +15,7 @@ const adminNavItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/" },
   { icon: CalendarDays, label: "Events", path: "/events-dashboard" },
   { icon: ClipboardList, label: "Registrations", path: "/registrations" },
-  { icon: DollarSign, label: "Revenue -static data", path: "/revenue" },
+  { icon: DollarSign, label: "Revenue", path: "/revenue" },
 ];
 
 /* ---------------- USER NAVIGATION ---------------- */
