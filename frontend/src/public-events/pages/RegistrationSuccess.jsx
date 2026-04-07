@@ -8,13 +8,28 @@ export default function RegistrationSuccess() {
   const [showReceipt, setShowReceipt] = useState(false);
   const [receiptData, setReceiptData] = useState(null);
   const [userData, setUserData] = useState(null);
-
+  const location = useLocation();
+  const paymentId = location.state?.paymentId;
+  console.log("Payment Id: ",paymentId);
 
   useEffect(() => {
     if (showReceipt) {
       fetchReceipt();
     }
   }, [showReceipt]);
+
+  const setRazorPayData = async() => {
+    try{
+      const resp = await fetch(`http://localhost:8080/api/transaction/setRazorpayData/${paymentId}/${id}`,{method:"POST",credentials:"include"})
+      console.log("Response: ",resp);
+    } catch (err){
+      console.log("Error : ",err);
+    }
+  }
+
+  useEffect(() => {
+    setRazorPayData();
+  }, [])
 
   const fetchReceipt = async () => {
     try {

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.service.RazorPayService;
 import com.example.demo.utils.RazorpayUtils;
 import com.razorpay.Order;
+import com.razorpay.RazorpayClient;
 @RestController
 @RequestMapping("/api/razorpay/")
 @CrossOrigin
@@ -21,6 +22,9 @@ public class RazorPayController
 {  
     @Autowired
     private RazorPayService razorPayService;
+
+    @Value("${razorpay.key_id}")
+    private String keyId;
 
     @Value("${razorpay.key_secret}")
     private String keySecret;
@@ -36,17 +40,38 @@ public class RazorPayController
         }
     }
 
+    @PostMapping("/fetch-order")
+    public String fetchOrder(@RequestParam String orderId)
+    {
+        try {
+            RazorpayClient client = new RazorpayClient(keyId, keySecret);
+            Order order = client.orders.fetch(orderId);
+            return order.toString();
+        } catch (Exception e) {
+            return "Error: "+e;
+        }
+    }
+
     @PostMapping("/verify")
     public String verifyPayment(@RequestBody Map<String, String> data)
     {
-
         try {
             String orderId = data.get("razorpay_order_id");
             String paymentId = data.get("razorpay_payment_id");
             String signature = data.get("razorpay_signature");
 
+            System.out.println("\n\n\tdata = "+data);
+
             String  generatedSignature = RazorpayUtils.generateSignature(orderId+"|"+paymentId, keySecret);
             if (generatedSignature.equals(signature)){
+                RazorpayClient client = new RazorpayClient(keyId, keySecret);
+                com.razorpay.Payment payment = client.payments.fetch(paymentId);
+
+                String status = payment.get("status");
+                if (status.equals("captured")) {
+                    
+                }
+                
                 return "SUCCESS";
             } else {
                 return "FAILURE";
@@ -55,4 +80,6 @@ public class RazorPayController
             return "Error: "+e;
         }
     }
+
+
 }

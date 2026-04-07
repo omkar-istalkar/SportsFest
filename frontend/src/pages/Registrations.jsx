@@ -177,7 +177,7 @@ const Registrations = () => {
                   </thead>
 
                   <tbody>
-                    {registrations.map((reg, i) => (
+                    {registrations.slice().reverse().map((reg, i) => (
                       <motion.tr
                         key={reg.id}
                         initial={{ opacity: 0, y: 8 }}

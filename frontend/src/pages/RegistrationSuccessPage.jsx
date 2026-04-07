@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 
@@ -8,12 +8,29 @@ export default function RegistrationSuccessPage() {
   const [showReceipt, setShowReceipt] = useState(false);
   const [receiptData, setReceiptData] = useState(null);
   const [userData, setUserData] = useState(null);
+  const location = useLocation();
+  const paymentId = location.state?.paymentId;
+  console.log("Payment Id: ",paymentId);
 
   useEffect(() => {
     if (showReceipt) {
       fetchReceipt();
     }
   }, [showReceipt]);
+
+    const setRazorPayData = async() => {
+    try{
+      const resp = await fetch(`http://localhost:8080/api/transaction/setRazorpayData/${paymentId}/${id}`,{method:"POST",credentials:"include"})
+      console.log("Response: ",resp);
+    } catch (err){
+      console.log("Error : ",err);
+    }
+  }
+
+  useEffect(() => {
+    setRazorPayData();
+  }, [])
+
 
   const fetchReceipt = async () => {
     try {

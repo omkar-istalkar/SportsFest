@@ -22,7 +22,6 @@ import com.example.demo.entity.FormField;
 import com.example.demo.entity.PublicUsers;
 import com.example.demo.entity.Registration;
 import com.example.demo.entity.UploadedFile;
-import com.example.demo.entity.User;
 import com.example.demo.enums.RegistrationStatus;
 import com.example.demo.repository.EventRepository;
 import com.example.demo.repository.FormFieldRepository;

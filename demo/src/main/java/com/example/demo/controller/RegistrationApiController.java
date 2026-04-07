@@ -54,7 +54,7 @@ public class RegistrationApiController {
 
     @Autowired
     private ReceiptService receiptService;
-
+   
     @GetMapping
     public List<Registration> getAllRegistrations() {
         return registrationService.getAllRegistrations();
