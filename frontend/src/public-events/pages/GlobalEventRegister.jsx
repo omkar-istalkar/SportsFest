@@ -31,6 +31,7 @@ export default function GlobalEventRegister() {
 
   useEffect(() => {
     if (passedEvent) {
+      setEvent(passedEvent);
       loadForm(passedEvent.id);
     } else {
       fetchEvent();
@@ -40,7 +41,7 @@ export default function GlobalEventRegister() {
   const fetchEvent = async () => {
     try {
       const res = await axios.get("/api/public/events");
-      const found = res.data.find(e => e.id == id);
+      const found = res.data.find(e => e.id == eventId);
 
       if (found) {
         setEvent(found);
@@ -121,6 +122,81 @@ export default function GlobalEventRegister() {
     return Object.keys(newErrors).length === 0;
   };
 
+  /* ================= 💰 RAZORPAY ================= */
+
+  const handlePayment = async (formDataObj) => {
+    try {
+      const amountToPay = Number(event?.amount);
+
+      const res = await axios.post(
+        `http://localhost:8080/api/razorpay/create-order?amount=${amountToPay}`,
+        {},
+        { withCredentials: true }
+      );
+
+      const order = res.data;
+
+      const options = {
+        key: "rzp_test_SaDaCKqE51bG72",
+        amount: order.amount,
+        currency: order.currency,
+        name: event?.title || event?.name,
+        description: "Global Event Registration",
+        order_id: order.id,
+
+        handler: async function (response) {
+          try {
+            const verifyRes = await axios.post(
+              "http://localhost:8080/api/razorpay/verify",
+              response,
+              { withCredentials: true }
+            );
+
+            if (verifyRes.data === "SUCCESS") {
+
+              const regRes = await axios.post(
+                "http://localhost:8080/global-events/submit-registration",
+                formDataObj,
+                { withCredentials: true }
+              );
+
+              const regId = regRes.data?.registrationId;
+
+              navigate(`/global-events/registration-success/${regId}`, {
+                state: {
+                  paymentId: response.razorpay_payment_id
+                }
+              });
+
+            } else {
+              alert("Payment verification failed ❌");
+            }
+
+          } catch (err) {
+            console.error(err);
+          }
+        },
+
+        modal: {
+          ondismiss: function () {
+            alert("Payment cancelled ❌");
+          },
+        },
+
+        theme: {
+          color: "#22c55e",
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+
+    } catch (err) {
+      console.error(err);
+      alert("Payment failed");
+    }
+  };
+
   /* ================= SUBMIT ================= */
 
   const handleSubmit = async (e) => {
@@ -135,7 +211,7 @@ export default function GlobalEventRegister() {
       ...formData,
     };
 
-    data.append("eventId", passedEvent.id);
+    data.append("eventId", event.id);
     data.append("data", JSON.stringify(finalData));
 
     Object.keys(files).forEach(id => {
@@ -151,14 +227,19 @@ export default function GlobalEventRegister() {
     try {
       setSubmitting(true);
 
-      const res = await axios.post(
-        "http://localhost:8080/global-events/submit-registration",
-        data,
-        { withCredentials: true }
-      );
+      if (event?.isPaid) {
+        await handlePayment(data);
+      } else {
+        const res = await axios.post(
+          "http://localhost:8080/global-events/submit-registration",
+          data,
+          { withCredentials: true }
+        );
 
-      const regId = res.data?.registrationId;
-      navigate(`/global-events/registration-success/${regId}`);
+        const regId = res.data?.registrationId;
+        navigate(`/global-events/registration-success/${regId}`);
+      }
+
     } catch (err) {
       console.error(err);
       alert("Submission failed");
@@ -180,17 +261,26 @@ export default function GlobalEventRegister() {
         transition={{ duration: 0.5 }}
         className="w-full max-w-2xl p-8 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl"
       >
+
         {/* HEADER */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white">
             {event?.title || event?.name}
           </h1>
+
+          {event?.isPaid && (
+            <p className="text-yellow-400 text-sm mt-2">
+              Amount: ₹{event.amount}
+            </p>
+          )}
+
           <p className="text-gray-400 text-sm mt-2">
             Fill the form to register for this event
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8">
+        {/* FORM */}
+         <form onSubmit={handleSubmit} className="space-y-8">
 
           {/* ================= USER DETAILS ================= */}
           <motion.div

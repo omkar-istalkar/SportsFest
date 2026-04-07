@@ -21,6 +21,7 @@ import VerifyCaptchaPage from "./public-events/pages/VerifyCaptchaPage.jsx";
 import GlobalEventRegister from "./public-events/pages/GlobalEventRegister.jsx";
 import RegistrationSuccess from "./public-events/pages/RegistrationSuccess.jsx";
 import StatusCheck from "./public-events/pages/StatusCheck.jsx";
+import RazorPayPage from "./pages/RazorPayPage.jsx";
 
 const queryClient = new QueryClient();
 
@@ -56,6 +57,7 @@ const App = () => (
         <Route path="/global-events/status-check" element={<StatusCheck/>}/>
         {/* 404 */}
         <Route path="*" element={<NotFound />} />
+        <Route path="/razorpay/payment" element={<RazorPayPage/>} />
 
       </Routes>
     </BrowserRouter>

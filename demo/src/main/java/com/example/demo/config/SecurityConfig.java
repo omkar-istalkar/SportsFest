@@ -60,7 +60,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     "/api/public/**",
                     "/api/files/**",
                     "/api/transaction/**",
-                    "/global-events/**"
+                    "/global-events/**",
+                    "/api/razorpay/**",
+                    "/api/payment/**"
             ).permitAll()
 
             .antMatchers("/api/dashboard/**").hasRole("ADMIN")

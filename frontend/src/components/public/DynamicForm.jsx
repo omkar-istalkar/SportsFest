@@ -59,23 +59,33 @@ export default function DynamicForm({ fields = [], eventId }) {
     }));
   };
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // 👉 If event is PAID → go to Razorpay page
+    if (selectedEvent?.isPaid) {
+      navigate("/razorpay/payment", {
+        state: {
+          event: selectedEvent,
+          formData,
+          files,
+          excelFiles,
+          eventId
+        }
+      });
+      return;
+    }
+
+    // 👉 If FREE → direct registration
     const data = new FormData();
-
     data.append("eventId", eventId);
-
-    // ✅ Send JSON data
     data.append("data", JSON.stringify(formData));
 
-    // ✅ Send normal files
     Object.keys(files).forEach((fieldId) => {
       data.append("files", files[fieldId]);
       data.append("fileFieldIds", fieldId);
     });
 
-    // ✅ Send Excel files (NEW)
     Object.keys(excelFiles).forEach((fieldId) => {
       data.append("excelFiles", excelFiles[fieldId]);
       data.append("excelFieldIds", fieldId);
@@ -91,15 +101,10 @@ export default function DynamicForm({ fields = [], eventId }) {
       );
 
       const regId = res.data?.registrationId;
-
-      if (!regId) {
-        alert("Registration completed but ID not returned");
-        return;
-      }
-
       navigate(`/registration-success/${regId}`);
+
     } catch (error) {
-      console.error("Registration error:", error);
+      console.error(error);
       alert("Registration failed");
     } finally {
       setLoading(false);
