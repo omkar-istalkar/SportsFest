@@ -12,6 +12,7 @@ public class TransactionData
     private String registrationId;
     private Integer amount;
     private String status = "PENDING";
+    private String razorPayResponse;
 
     public Long getId() {
         return id;
@@ -42,6 +43,12 @@ public class TransactionData
     }
     public void setStatus(String status) {
         this.status = status;
+    }
+    public String getRazorPayResponse() {
+        return razorPayResponse;
+    }
+    public void setRazorPayResponse(String razorPayResponse) {
+        this.razorPayResponse = razorPayResponse;
     }
     
 }

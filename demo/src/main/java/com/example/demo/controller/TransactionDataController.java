@@ -57,10 +57,12 @@ public class TransactionDataController
     public String setRazorPayData(@PathVariable String paymentId, @PathVariable String id)
     {
         String res = "";
+        String response = "";
         try{
             RazorpayClient client = new RazorpayClient(razorPayKey, razorPaySecret);
             com.razorpay.Payment payment = client.payments.fetch(paymentId);
             res = payment.get("status");
+            response = payment.toString();
         } catch (Exception e){
             System.out.println("Got Exception: "+e);
         }
@@ -70,6 +72,7 @@ public class TransactionDataController
         if (res.equals("captured")) {
             tData.setStatus("SUCCESS");
         }
+        tData.setRazorPayResponse(response);
         tRepository.save(tData);
         return "Modified transaction data";
     }

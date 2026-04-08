@@ -19,13 +19,13 @@ export default function PaymentPage() {
 
         console.log("FINAL AMOUNT:", amountToPay);
       const res = await axios.post(
-        `http://localhost:8080/api/razorpay/create-order?amount=${amountToPay}`,{withCredentials:true}
+        `http://localhost:8080/api/razorpay/create-order?amount=${amountToPay}`,{eventId:event.id},{withCredentials:true}
       );
 
       const order = res.data;
 
       const options = {
-        key: "rzp_test_SaDaCKqE51bG72",
+        key: import.meta.env.VITE_RAZORPAY_KEY,
         amount: order.amount,
         currency: order.currency,
         name: event.name,

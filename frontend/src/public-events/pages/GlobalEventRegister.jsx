@@ -137,7 +137,7 @@ export default function GlobalEventRegister() {
       const order = res.data;
 
       const options = {
-        key: "rzp_test_SaDaCKqE51bG72",
+        key: import.meta.env.VITE_RAZORPAY_KEY,
         amount: order.amount,
         currency: order.currency,
         name: event?.title || event?.name,

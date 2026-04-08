@@ -111,7 +111,7 @@ public ByteArrayInputStream generateReceipt(String regId) {
         addStyledRow(table, "Email", email, labelFont, valueFont);
 
         if (txn.getAmount() > 0) {
-            addStyledRow(table, "Amount", "₹ " + txn.getAmount(), labelFont, valueFont);
+            addStyledRow(table, "Amount", "₹ " + txn.getAmount(), labelFont, valueFont);        
         }
 
         // ================= STATUS BADGE =================
