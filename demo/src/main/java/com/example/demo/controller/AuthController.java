@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.dto.RegisterRequest;
 import com.example.demo.entity.User;
+import com.example.demo.entity.UserData;
 import com.example.demo.enums.Role;
 import com.example.demo.repository.RegistrationRepository;
+import com.example.demo.repository.UserDataRepository;
 import com.example.demo.repository.UserRepository;
 
 @RestController
@@ -34,6 +36,8 @@ public class AuthController
 
     @Autowired
     private RegistrationRepository repository;
+
+    @Autowired private UserDataRepository userDataRepository;
 
     //Register user
     @PostMapping("/register")
@@ -53,6 +57,13 @@ public class AuthController
         user.setRole(Role.ROLE_USER);
 
         userRepository.save(user);
+
+        UserData user1 = new UserData();
+        user1.setId(user.getId());
+        user1.setEmail(user.getEmail());
+        user1.setName(user.getName());
+
+        userDataRepository.save(user1);
 
         return "User Registration successfull";
     }

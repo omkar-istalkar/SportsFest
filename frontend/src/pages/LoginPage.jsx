@@ -32,12 +32,14 @@ export default function LoginPage() {
 
       const role = res.data.role;
       localStorage.setItem("role", role);
+      localStorage.setItem("username", userName);
 
       if (role === "ROLE_ADMIN") {
         window.location.href = "/";
       }
       else if (role === "ROLE_USER") {
         window.location.href = "/user-dashboard";
+        
       }
 
     }
