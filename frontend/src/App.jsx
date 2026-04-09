@@ -22,6 +22,7 @@ import GlobalEventRegister from "./public-events/pages/GlobalEventRegister.jsx";
 import RegistrationSuccess from "./public-events/pages/RegistrationSuccess.jsx";
 import StatusCheck from "./public-events/pages/StatusCheck.jsx";
 import RazorPayPage from "./pages/RazorPayPage.jsx";
+import { ManageUsers } from "./pages/ManageUsers.jsx";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,7 @@ const App = () => (
         <Route path="/register/:id" element={<EventRegisterPage />} />
         <Route path="/registration-status" element={<RegistrationStatusPage />} />
         <Route path="/registration-success/:id" element={<RegistrationSuccessPage />} />
+        <Route path="/manage-users" element={<ManageUsers/>}/>
 
         <Route path="/user-dashboard" element={<UserDashboard />} />
         <Route path="/user-previous-registrations" element={<UserPreviousRegistrations/>}/>

@@ -1,8 +1,10 @@
 package com.example.demo.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,5 +68,22 @@ public class UserDataController
         }
         userDataRepository.save(user);
         return "";
+    }
+
+    @GetMapping("/users")
+    public List<Map<String, String>>getAllUsrs()
+    {
+        List<UserData> users = userDataRepository.findAll();
+        List<Map<String, String>>response = new ArrayList<>();
+        for (UserData userData : users) {
+            Map<String, String> result = new HashMap<>();
+            result.put("name",userData.getName());
+            result.put("address",userData.getAddress());
+            result.put("email",userData.getEmail());
+            result.put("phone",userData.getPhoneNo());
+            result.put("userId",userData.getId().toString());
+            response.add(result);
+        }
+        return response;
     }
 }

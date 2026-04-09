@@ -5,7 +5,8 @@ import {
   ClipboardList,
   DollarSign,
   HelpCircle,
-  CheckSquare
+  CheckSquare,
+  User
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
@@ -16,6 +17,7 @@ const adminNavItems = [
   { icon: CalendarDays, label: "Events", path: "/events-dashboard" },
   { icon: ClipboardList, label: "Registrations", path: "/registrations" },
   { icon: DollarSign, label: "Revenue", path: "/revenue" },
+  { icon: User, label:" Manage Users", path: "/manage-users"},
 ];
 
 /* ---------------- USER NAVIGATION ---------------- */
